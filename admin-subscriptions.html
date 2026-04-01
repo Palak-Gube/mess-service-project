@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Subscriptions - Admin</title>
+  <link rel="stylesheet" href="admin dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .subscriptions-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .subscriptions-table th, .subscriptions-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    .subscriptions-table th { background: #243b7b; color: white; }
+    .status.active { color: #4caf50; font-weight: bold; }
+    .status.expired { color: #f44336; }
+    .status.cancelled { color: #ff9800; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+      <div class="logo"><i class="fas fa-utensils"></i> Smart Mess Admin</div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="user-management.html"><i class="fas fa-users"></i> User Management</a>
+        <a href="menu-management.html"><i class="fas fa-utensils"></i> Menu Management</a>
+        <a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a>
+        <a href="billing-finance.html"><i class="fas fa-file-invoice-dollar"></i> Billing & Finance</a>
+        <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+        <a href="admin-feedbacks.html"><i class="fas fa-comments"></i> View Feedbacks</a>
+        <a href="admin-subscriptions.html" class="active"><i class="fas fa-list"></i> View Subscriptions</a>
+        <a href="admin-attendance.html"><i class="fas fa-check-circle"></i> Mark Attendance</a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" aria-label="Logout" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="header">
+        <h1>Student Subscriptions</h1>
+      </header>
+      <div id="subscriptionsContainer">
+        <p>Loading subscriptions...</p>
+      </div>
+    </main>
+  </div>
+  <script src="api.js"></script>
+  <script>
+    let subscriptionsCache = [];
+
+    async function updateSubscriptionStatus(id, status) {
+      try {
+        const result = await apiCall(`/admin/subscriptions/${id}`, 'PUT', { status });
+        if (result && result.success) {
+          alert(result.message || 'Subscription updated');
+          await loadSubscriptions();
+        } else {
+          alert(result.error || 'Failed to update subscription');
+        }
+      } catch (err) {
+        alert('Error updating subscription: ' + err.message);
+      }
+    }
+
+    async function loadSubscriptions() {
+      const container = document.getElementById('subscriptionsContainer');
+      const res = await admin.getAllSubscriptions();
+      
+      if (res && !res.error && res.length > 0) {
+        subscriptionsCache = res;
+        container.innerHTML = `
+          <table class="subscriptions-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Student ID</th>
+                <th>Package</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Amount Paid</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${subscriptionsCache.map(s => `
+                <tr>
+                  <td>${s.student_name}</td>
+                  <td>${s.student_id}</td>
+                  <td>${s.package_name}</td>
+                  <td>${s.start_date}</td>
+                  <td>${s.end_date}</td>
+                  <td>₹${s.amount_paid}</td>
+                  <td><span class="status ${s.status}">${s.status}</span></td>
+                  <td>
+                    ${s.status !== 'active' ? `<button class="btn-secondary sub-action" data-id="${s.id}" data-status="active">Mark Active</button>` : ''}
+                    ${s.status !== 'expired' ? `<button class="btn-warning sub-action" data-id="${s.id}" data-status="expired">Mark Expired</button>` : ''}
+                    ${s.status !== 'cancelled' ? `<button class="btn-warning sub-action" data-id="${s.id}" data-status="cancelled">Cancel</button>` : ''}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        subscriptionsCache = [];
+        container.innerHTML = '<p>No subscriptions available yet.</p>';
+      }
+    }
+
+    // Handle status change actions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('sub-action')) {
+        const id = e.target.dataset.id;
+        const status = e.target.dataset.status;
+        if (!id || !status) return;
+        if (confirm(`Mark subscription #${id} as ${status}?`)) {
+          updateSubscriptionStatus(id, status);
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadSubscriptions);
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance - Admin</title>
+  <link rel="stylesheet" href="admin dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .attendance-form { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+    .form-group select, .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+    .attendance-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .attendance-table th, .attendance-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    .attendance-table th { background: #243b7b; color: white; }
+    .status.present { color: #4caf50; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo"><i class="fas fa-utensils"></i> Smart Mess Admin</div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="admin-attendance.html" class="active"><i class="fas fa-check-circle"></i> Mark Attendance</a>
+        <a href="admin-feedbacks.html"><i class="fas fa-comments"></i> Feedbacks</a>
+        <a href="admin-subscriptions.html"><i class="fas fa-list"></i> Subscriptions</a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="header">
+        <h1>Mark Student Attendance</h1>
+      </header>
+      
+      <div class="attendance-form">
+        <h3>Mark Attendance</h3>
+        <div class="form-group">
+          <label>Select Student:</label>
+          <select id="studentSelect"></select>
+        </div>
+        <div class="form-group">
+          <label>Date:</label>
+          <input type="date" id="attendanceDate" value="">
+        </div>
+        <div class="form-group">
+          <label>Meal Type:</label>
+          <select id="mealType">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="markBtn" style="padding: 10px 20px; background: #243b7b; color: white; border: none; border-radius: 5px; cursor: pointer;">
+          Mark Attendance
+        </button>
+      </div>
+
+      <div id="attendanceReport">
+        <h3>Today's Attendance Report</h3>
+        <div id="reportContainer">Loading...</div>
+      </div>
+    </main>
+  </div>
+  <script src="api.js"></script>
+  <script>
+    // Load students for dropdown
+    async function loadStudents() {
+      const students = await admin.getAllStudents();
+      const select = document.getElementById('studentSelect');
+      if (students && !students.error) {
+        select.innerHTML = '<option value="">Select Student</option>' + 
+          students.map(s => `<option value="${s.id}">${s.name} (${s.student_id})</option>`).join('');
+      }
+    }
+
+    // Set today's date
+    document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
+
+    // Mark attendance
+    document.getElementById('markBtn').addEventListener('click', async function() {
+      const studentId = document.getElementById('studentSelect').value;
+      const date = document.getElementById('attendanceDate').value;
+      const mealType = document.getElementById('mealType').value;
+      const adminId = localStorage.getItem('userId');
+
+      if (!studentId) { alert('Please select a student'); return; }
+
+      const result = await admin.markStudentAttendance(studentId, date, mealType);
+      if (result && result.success) {
+        alert('Attendance marked successfully!');
+        loadTodayReport();
+      } else {
+        alert('Error: ' + (result.error || 'Failed to mark attendance'));
+      }
+    });
+
+    // Load today's attendance report
+    async function loadTodayReport() {
+      const today = new Date().toISOString().split('T')[0];
+      const report = await admin.getAttendanceReport(today);
+      const container = document.getElementById('reportContainer');
+      
+      if (report && !report.error && report.length > 0) {
+        container.innerHTML = `
+          <table class="attendance-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Student ID</th>
+                <th>Meal Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${report.map(r => `
+                <tr>
+                  <td>${r.student_name}</td>
+                  <td>${r.student_id}</td>
+                  <td>${r.meal_type}</td>
+                  <td><span class="status ${r.status}">${r.status}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        container.innerHTML = '<p>No attendance records for today.</p>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStudents();
+      loadTodayReport();
+    });
+  </script>
+</body>
+</html>
+

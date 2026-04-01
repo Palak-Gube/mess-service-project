@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Mess Services Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color:#fff; 
+      overflow-x: hidden;
+    }
+
+    /* NAVBAR */
+    nav {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:20px 40px;
+      background: rgba(17, 19, 26, 0.95);
+      backdrop-filter: blur(10px);
+      position:sticky;
+      top:0;
+      z-index:1000;
+      border-bottom: 1px solid rgba(255, 122, 26, 0.1);
+    }
+    .logo { 
+      font-weight:800; 
+      font-size:1.8rem; 
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .menu { display:flex; gap:32px; align-items:center; }
+    .menu a { 
+      color:#e2e8f0; 
+      text-decoration:none; 
+      font-weight:500; 
+      transition:all 0.3s;
+      position: relative;
+    }
+    .menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #ff7a1a, #ff9a4d);
+      transition: width 0.3s;
+    }
+    .menu a:hover { color:#ff7a1a; }
+    .menu a:hover::after { width: 100%; }
+    .nav-btns { display:flex; gap:12px; }
+    .nav-btn { 
+      padding:10px 20px; 
+      border-radius:8px; 
+      font-weight:600; 
+      cursor:pointer; 
+      border:none;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    .login-btn { 
+      background:transparent; 
+      color:#fff; 
+      border:2px solid #ff7a1a;
+    }
+    .login-btn:hover { 
+      background:#ff7a1a; 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 122, 26, 0.4);
+    }
+    .trial-btn { 
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color:#111; 
+      box-shadow: 0 4px 15px rgba(255, 122, 26, 0.3);
+    }
+    .trial-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 122, 26, 0.5);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      position:relative;
+      min-height:90vh;
+      background: linear-gradient(135deg, rgba(10, 14, 26, 0.9), rgba(26, 31, 46, 0.9)),
+                  url('miguel-joya-GJzCc1IfP5g-unsplash.jpg') center/cover no-repeat;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      padding: 60px 20px;
+    }
+    .hero-content { 
+      position:relative; 
+      z-index:2; 
+      max-width:900px;
+      animation: fadeInUp 1s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero h1 { 
+      font-size:clamp(2.5rem, 5vw, 4rem); 
+      margin-bottom:24px;
+      font-weight: 800;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #fff, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p { 
+      font-size:clamp(1.1rem, 2vw, 1.4rem); 
+      margin-bottom:32px; 
+      color:#cbd5e1;
+      line-height: 1.6;
+    }
+    .hero .buttons { 
+      display:flex; 
+      gap:16px; 
+      flex-wrap:wrap; 
+      justify-content:center;
+    }
+    .hero-btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+    .hero-primary {
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #111;
+      box-shadow: 0 4px 15px rgba(255, 122, 26, 0.4);
+    }
+    .hero-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(255, 122, 26, 0.6);
+    }
+    .hero-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    .hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    /* FEATURES */
+    .features {
+      display:flex; 
+      justify-content:center; 
+      gap:32px;
+      padding:80px 20px;
+      flex-wrap:wrap;
+      background: #0f1419;
+    }
+    .feature-card {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      padding:32px;
+      border-radius:16px;
+      min-width:280px;
+      flex:1;
+      max-width:320px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #ff7a1a, #ff9a4d);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(255, 122, 26, 0.2);
+      border-color: rgba(255, 122, 26, 0.3);
+    }
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #ff7a1a;
+      margin-bottom: 16px;
+    }
+    .feature-card h3 { 
+      margin-bottom:12px; 
+      color:#fff;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .feature-card p { 
+      font-size:1rem; 
+      color:#94a3b8;
+      line-height: 1.6;
+    }
+
+    /* ABOUT */
+    .about { 
+      padding:100px 40px; 
+      text-align:center; 
+      background: linear-gradient(135deg, #0a0e1a, #1a1f2e);
+    }
+    .about h2 { 
+      color:#ff7a1a; 
+      font-size:clamp(2rem, 4vw, 3rem); 
+      margin-bottom:24px;
+      font-weight: 800;
+    }
+    .about p { 
+      max-width:800px; 
+      margin:0 auto; 
+      color:#cbd5e1; 
+      line-height:1.8; 
+      font-size:1.2rem;
+    }
+
+    /* PRICING */
+    #pricing {
+      background:#0f1419;
+      color:#fff;
+      padding:100px 20px;
+      text-align:center;
+    }
+    #pricing h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+    #pricing > p {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      margin-bottom: 50px;
+    }
+    .pricing-container {
+      display:flex;
+      justify-content:center;
+      gap:40px;
+      flex-wrap:wrap;
+    }
+    .price-card {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      padding:40px 30px;
+      border-radius:16px;
+      width:320px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.3);
+      color:#fff;
+      border: 2px solid rgba(255, 122, 26, 0.1);
+      transition: all 0.3s;
+      position: relative;
+    }
+    .price-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(255, 122, 26, 0.5);
+      box-shadow: 0 12px 40px rgba(255, 122, 26, 0.3);
+    }
+    .price-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    .price-card h2 { 
+      color:#ff7a1a; 
+      font-size:2.8rem; 
+      margin:20px 0;
+      font-weight: 800;
+    }
+    .price-card p { 
+      color: #94a3b8;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .order-btn {
+      margin-top:20px;
+      padding:12px 24px;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color:#111;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    .order-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 122, 26, 0.4);
+    }
+
+    /* ORDER */
+    #order {
+      background:linear-gradient(135deg, #0a0e1a, #1a1f2e);
+      padding:100px 20px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .order-box {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      width:420px;
+      max-width: 100%;
+      padding:50px 40px;
+      border-radius:16px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 122, 26, 0.2);
+    }
+    .order-box h2 {
+      text-align:center;
+      color:#ff7a1a;
+      margin-bottom:30px;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .input-box {
+      margin-bottom:20px;
+    }
+    .input-box label {
+      display:block;
+      font-weight:600;
+      margin-bottom:8px;
+      color:#fff;
+      font-size: 0.95rem;
+    }
+    .input-box input,
+    .input-box select {
+      width:100%;
+      padding:12px 16px;
+      border:2px solid rgba(255, 255, 255, 0.1);
+      border-radius:8px;
+      background:#0f1419;
+      color:white;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    .input-box input:focus,
+    .input-box select:focus {
+      outline: none;
+      border-color: #ff7a1a;
+      box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.1);
+    }
+    .confirm-btn {
+      width:100%;
+      padding:14px;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color:#111;
+      border:none;
+      border-radius:8px;
+      font-weight:700;
+      cursor:pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    .confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 122, 26, 0.4);
+    }
+    .whatsapp-btn {
+      width:100%;
+      padding:14px;
+      background: #25D366;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-weight:700;
+      cursor:pointer;
+      font-size: 1rem;
+      margin-top:12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    .whatsapp-btn:hover {
+      background: #20BA5A;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+
+    /* CONTACT */
+    #contact {
+      background:#0f1419;
+      color:#fff;
+      padding:100px 20px;
+      text-align:center;
+    }
+    #contact h2 {
+      font-size:clamp(2rem, 4vw, 3rem);
+      color:#ff7a1a;
+      margin-bottom:16px;
+      font-weight: 800;
+    }
+    #contact > p {
+      font-size:1.3rem;
+      margin-bottom:50px;
+      color: #94a3b8;
+    }
+    .contact-container {
+      max-width:1100px;
+      margin:auto;
+      display:flex;
+      flex-wrap:wrap;
+      gap:40px;
+      justify-content:center;
+      align-items: flex-start;
+    }
+    .contact-info {
+      flex:1;
+      min-width:280px;
+      text-align:left;
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      padding: 40px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+    }
+    .contact-info p {
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+      color: #cbd5e1;
+    }
+    .contact-info strong {
+      color: #ff7a1a;
+      display: inline-block;
+      min-width: 100px;
+    }
+    .contact-map {
+      flex:2;
+      min-width:300px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .contact-map iframe {
+      width:100%;
+      height:450px;
+      border:0;
+    }
+
+    /* STATS SECTION */
+    .stats {
+      background: linear-gradient(135deg, #0a0e1a, #1a1f2e);
+      padding: 80px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #ff7a1a;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    @media(max-width:768px) {
+      nav { padding: 16px 20px; }
+      .menu { display: none; }
+      .hero h1 { font-size:2.5rem; }
+      .features { flex-direction:column; align-items:center; }
+      .feature-card { max-width:100%; }
+      .order-box { width: 100%; padding: 30px 20px; }
+      .contact-container { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">🍽️ Smart Mess</div>
+    <div class="menu">
+      <a href="#features">Features</a>
+      <a href="#about">About Us</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#order">Order</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="nav-btns">
+      <button class="nav-btn login-btn" onclick="location.href='login1.html'">LOG IN</button>
+      <button class="nav-btn trial-btn" onclick="location.href='registeration.html'">SIGN UP</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>The Smartest Way to Manage Mess Services</h1>
+      <p>Streamline meal management, track attendance, handle subscriptions, and manage student records all from one powerful, intuitive dashboard.</p>
+      <div class="buttons">
+        <button class="hero-btn hero-primary" onclick="location.href='registeration.html'">
+          <i class="fas fa-rocket"></i> Get Started Free
+        </button>
+        <button class="hero-btn hero-secondary" onclick="location.href='login1.html'">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button class="hero-btn hero-secondary" onclick="location.href='explore.html'">
+          <i class="fas fa-compass"></i> Explore Features
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stat-item">
+      <span class="stat-number">500+</span>
+      <span class="stat-label">Happy Students</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">10K+</span>
+      <span class="stat-label">Meals Served</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">98%</span>
+      <span class="stat-label">Satisfaction Rate</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">24/7</span>
+      <span class="stat-label">Support Available</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-utensils"></i></div>
+      <h3>Meal Management</h3>
+      <p>Track daily meals, manage menus, and view meal history with real-time updates and notifications.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-users"></i></div>
+      <h3>Student Records</h3>
+      <p>Comprehensive student profiles with enrollment tracking, contact information, and subscription status.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+      <h3>Fee Tracking</h3>
+      <p>Monitor payments, generate invoices, and track subscription renewals with automated billing reports.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-clipboard-check"></i></div>
+      <h3>Attendance System</h3>
+      <p>Digital attendance tracking for breakfast, lunch, and dinner with detailed analytics and reports.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-star"></i></div>
+      <h3>Feedback & Ratings</h3>
+      <p>Collect student feedback, rate menu items, and improve service quality based on real-time insights.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+      <h3>Mobile Friendly</h3>
+      <p>Access your dashboard from any device with our responsive design optimized for smartphones and tablets.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <h2>About Us</h2>
+    <p>At <strong style="color: #ff7a1a;">Smart Mess Services</strong>, we revolutionize meal management for educational institutions and residential facilities. Our platform combines cutting-edge technology with user-friendly design to deliver an exceptional experience for both administrators and students.</p>
+    <p style="margin-top: 20px;">We're committed to providing fresh, nutritious meals while maintaining the highest standards of service quality and customer satisfaction.</p>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <h2>Our Pricing</h2>
+    <p>Choose the plan that suits you best!</p>
+    <div class="pricing-container">
+      <div class="price-card">
+        <h3>Per Meal</h3>
+        <h2>₹60</h2>
+        <p>Perfect for occasional meals. Fresh vegetarian or non-vegetarian options available.</p>
+        <button class="order-btn" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'});">Order Now</button>
+      </div>
+      <div class="price-card">
+        <h3>Monthly Plan</h3>
+        <h2>₹3000</h2>
+        <p>Best value! 30 meals delivered throughout the month. Save ₹300 compared to per-meal pricing.</p>
+        <button class="order-btn" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'});">Order Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER -->
+  <section id="order">
+    <div class="order-box">
+      <h2>Place Your Order</h2>
+      <div class="input-box">
+        <label><i class="fas fa-user"></i> Full Name</label>
+        <input type="text" id="name" placeholder="Enter your full name">
+      </div>
+      <div class="input-box">
+        <label><i class="fas fa-phone"></i> Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter phone number">
+      </div>
+      <div class="input-box">
+        <label><i class="fas fa-box"></i> Select Plan</label>
+        <select id="plan">
+          <option>Select Your Plan</option>
+          <option>Per Meal - ₹60</option>
+          <option>Monthly Plan - ₹3000</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label><i class="fas fa-map-marker-alt"></i> Address</label>
+        <input type="text" id="address" placeholder="Delivery Address">
+      </div>
+      <div class="input-box">
+        <label><i class="fas fa-hamburger"></i> No. of Meals</label>
+        <input type="number" id="meals" placeholder="e.g. 1 / 30" min="1">
+      </div>
+
+      <button class="confirm-btn" onclick="confirmOrder()">
+        <i class="fas fa-check-circle"></i> Confirm Order
+      </button>
+      <button class="whatsapp-btn" onclick="orderOnWhatsApp()">
+        <i class="fab fa-whatsapp"></i> Order on WhatsApp
+      </button>
+    </div>
+  </section>
+
+  <script>
+    function confirmOrder() {
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+      const plan = document.getElementById('plan').value;
+      const address = document.getElementById('address').value;
+      const meals = document.getElementById('meals').value;
+
+      if (!name || !phone || !plan || !address || !meals) {
+        alert('Please fill all fields before confirming your order.');
+        return;
+      }
+
+      alert(`Order confirmed!\n\nName: ${name}\nPhone: ${phone}\nPlan: ${plan}\nMeals: ${meals}\nAddress: ${address}\n\nThank you for your order!`);
+      
+      // Reset form
+      document.getElementById('name').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('plan').value = 'Select Your Plan';
+      document.getElementById('address').value = '';
+      document.getElementById('meals').value = '';
+    }
+
+    function orderOnWhatsApp() {
+      let name = document.getElementById('name').value;
+      let phone = document.getElementById('phone').value;
+      let plan = document.getElementById('plan').value;
+      let address = document.getElementById('address').value;
+      let meals = document.getElementById('meals').value;
+
+      if (!name || !phone || !plan || !address || !meals) {
+        alert('Please fill all fields before ordering on WhatsApp.');
+        return;
+      }
+
+      let message = `Hi! I want to place an order.%0A%0A` +
+        `Name: ${name}%0A` +
+        `Phone: ${phone}%0A` +
+        `Plan: ${plan}%0A` +
+        `Number of Meals: ${meals}%0A` +
+        `Address: ${address}%0A%0A` +
+        `Thank you!`;
+
+      let phoneNumber = "919325998862";
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    }
+  </script>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>Have questions? We're here to help!</p>
+
+    <div class="contact-container">
+      <div class="contact-info">
+        <p><strong>Email:</strong> pratikmishra761@gmail.com</p>
+        <p><strong>Phone:</strong> +91 9325998862, +91 7410594717</p>
+        <p><strong>Address:</strong> SMART MESS, SVPCET, NAGPUR</p>
+        <p style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255, 122, 26, 0.2);">
+          <strong>Business Hours:</strong><br>
+          Monday - Saturday: 8:00 AM - 10:00 PM<br>
+          Sunday: 10:00 AM - 8:00 PM
+        </p>
+      </div>
+
+      <div class="contact-map">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.699591886777!2d79.04515827430534!3d21.004675788607138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd4bdc6b03bfded%3A0x51964eb66fa3ec5e!2sSt.%20Vincent%20Pallotti%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1762066184075!5m2!1sen!2sin" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

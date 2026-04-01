@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mess Packages for Smart Mess - View and select meal packages.">
+  <title>Mess Packages - Smart Mess</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar - Matching Dashboard */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #11131a 0%, #0a0e1a 100%);
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 122, 26, 0.1);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding: 0 20px;
+    }
+
+    .nav-links {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 15px;
+    }
+
+    .nav-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(255, 122, 26, 0.1);
+      color: #ff7a1a;
+      transform: translateX(5px);
+    }
+
+    .nav-links a i {
+      width: 20px;
+      font-size: 1.1rem;
+    }
+
+    .logout-link {
+      padding: 20px 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+    }
+
+    .logout-link a {
+      color: #ff6b6b;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .logout-link a:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 30px 40px;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 122, 26, 0.2);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .user-info strong {
+      color: #ff7a1a;
+    }
+
+    /* Section */
+    .section {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section h2 i {
+      color: #ff7a1a;
+    }
+
+    /* Packages Grid */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .package-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+      transition: all 0.3s;
+    }
+
+    .package-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 122, 26, 0.3);
+      box-shadow: 0 8px 25px rgba(255, 122, 26, 0.2);
+    }
+
+    .package-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ff7a1a;
+      margin-bottom: 15px;
+    }
+
+    .package-card .price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .package-card .price span {
+      font-size: 1rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .package-card p {
+      color: #94a3b8;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .package-card ul {
+      list-style: none;
+      margin-bottom: 25px;
+    }
+
+    .package-card ul li {
+      color: #cbd5e1;
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .package-card ul li i {
+      color: #4caf50;
+    }
+
+    .select-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #fff;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .select-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 122, 26, 0.4);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 122, 26, 0.2);
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .close {
+      color: #94a3b8;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .close:hover {
+      color: #ff7a1a;
+    }
+
+    .modal-content h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .modal-content p {
+      color: #94a3b8;
+      margin-bottom: 25px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 122, 26, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+      .packages-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar - Matching Dashboard -->
+    <aside class="sidebar">
+      <div class="logo">🍽️ Smart Mess</div>
+      <nav class="nav-links">
+        <a href="student-dashboard.html">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="menu-rating.html">
+          <i class="fas fa-utensils"></i> Menu & Rating
+        </a>
+        <a href="meal-packages.html" class="active">
+          <i class="fas fa-box"></i> Mess Packages
+        </a>
+        <a href="billing-payment.html">
+          <i class="fas fa-receipt"></i> Billing & Payments
+        </a>
+        <a href="profile.html">
+          <i class="fas fa-user-circle"></i> Profile
+        </a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1>Mess Packages</h1>
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, <strong id="user-name">Student</strong></span>
+        </div>
+      </header>
+
+      <!-- Packages Grid -->
+      <section class="section">
+        <h2><i class="fas fa-box"></i> Choose Your Package</h2>
+        <div class="packages-grid" id="packagesGrid">
+          <div style="text-align: center; padding: 40px; color: #94a3b8;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
+            <p>Loading packages...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Package Selection Modal -->
+  <div class="modal" id="packageModal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Confirm Package Selection</h2>
+      <p id="packageDetails">Processing selection...</p>
+      <button class="btn-primary" id="confirmSelection">Confirm & Enroll</button>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+
+    // Redirect if not logged in
+    if (!userId || userRole !== 'student') {
+      alert('Please login as a student to access this page.');
+      window.location.href = 'login1.html';
+    }
+
+    // Load student name
+    async function loadStudentName() {
+      try {
+        const profile = await student.getProfile(userId);
+        if (profile && !profile.error) {
+          document.getElementById('user-name').textContent = profile.name || 'Student';
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    // Load packages from backend
+    let packages = [];
+    async function loadPackages() {
+      try {
+        const result = await menu.getPackages();
+        if (result && !result.error && result.length > 0) {
+          // Remove duplicates based on package ID
+          const uniquePackages = [];
+          const seenIds = new Set();
+          
+          for (const pkg of result) {
+            if (!seenIds.has(pkg.id)) {
+              seenIds.add(pkg.id);
+              uniquePackages.push({
+                id: pkg.id,
+                name: pkg.name,
+                price: pkg.price,
+                duration: `${pkg.duration} Day${pkg.duration > 1 ? 's' : ''}`,
+                features: typeof pkg.features === 'string' ? JSON.parse(pkg.features || '[]') : (pkg.features || []),
+                description: pkg.description || ''
+              });
+            }
+          }
+          
+          packages = uniquePackages;
+          renderPackages();
+        } else {
+          document.getElementById('packagesGrid').innerHTML = '<div style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-box"></i><p>No packages available</p></div>';
+        }
+      } catch (error) {
+        console.error('Error loading packages:', error);
+        document.getElementById('packagesGrid').innerHTML = '<div style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-exclamation-circle"></i><p>Error loading packages. Please try again later.</p></div>';
+      }
+    }
+
+    // Render packages grid
+    function renderPackages() {
+      const grid = document.getElementById('packagesGrid');
+      if (packages.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-box"></i><p>No packages available</p></div>';
+        return;
+      }
+
+      grid.innerHTML = packages.map(pkg => `
+        <div class="package-card">
+          <h3>${pkg.name}</h3>
+          <p class="price">₹${pkg.price} <span>(${pkg.duration})</span></p>
+          <p>${pkg.description || 'Meal package'}</p>
+          <ul>
+            ${pkg.features.map(feature => `<li><i class="fas fa-check"></i> ${feature}</li>`).join('')}
+          </ul>
+          <button class="select-btn" data-id="${pkg.id}">Select Package</button>
+        </div>
+      `).join('');
+    }
+
+    // Handle select button clicks
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('select-btn')) {
+        const pkgId = parseInt(e.target.dataset.id);
+        const pkg = packages.find(p => p.id === pkgId);
+        if (pkg) {
+          document.getElementById('packageDetails').textContent = `Enroll in ${pkg.name} for ₹${pkg.price}?`;
+          document.getElementById('packageModal').style.display = 'block';
+
+          // Confirm selection
+          document.getElementById('confirmSelection').onclick = async () => {
+            if (!userId) { 
+              alert('Please login first'); 
+              return; 
+            }
+            
+            try {
+              const result = await student.selectPackage(userId, pkg.id);
+              if (result && result.success) {
+                alert(`✅ Enrolled in ${pkg.name}!`);
+                document.getElementById('packageModal').style.display = 'none';
+              } else {
+                alert('❌ Error: ' + (result.error || 'Failed to enroll'));
+              }
+            } catch (error) {
+              console.error('Error selecting package:', error);
+              alert('❌ Connection error. Please check if the server is running.');
+            }
+          };
+        }
+      }
+    });
+
+    // Modal close
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('packageModal').style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('packageModal')) {
+        document.getElementById('packageModal').style.display = 'none';
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadStudentName();
+      await loadPackages();
+    });
+  </script>
+</body>
+</html>

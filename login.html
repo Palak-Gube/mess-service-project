@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to Smart Mess Tracker - Access your dashboard as a student or admin.">
+  <title>Smart Mess Tracker - Login</title>
+  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://via.placeholder.com/32x32/243b7b/ffffff?text=SM" type="image/x-icon">
+</head>
+<body class="login-body">
+  <div class="login-container">
+    <div class="login-box">
+      <div class="logo">
+        <i class="fas fa-utensils"></i> Smart Mess Tracker
+      </div>
+      <h2>Login to Your Account</h2>
+      
+      <form id="login-form" role="form" aria-labelledby="login-title">
+        <div class="form-group">
+          <label for="role">
+            <i class="fas fa-user-tag"></i> I am a...
+          </label>
+          <select id="role" name="role" required aria-describedby="roleHelp">
+            <option value="">Select your role</option>
+            <option value="student">Student/Resident</option>
+            <option value="admin">Mess Admin/Staff</option>
+          </select>
+          <small id="roleHelp">Choose your role to access the appropriate dashboard.</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="username">
+            <i class="fas fa-id-card"></i> ID / Username
+          </label>
+          <input type="text" id="username" name="username" required aria-describedby="usernameHelp">
+          <small id="usernameHelp">Enter your unique ID or username.</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock"></i> Password
+          </label>
+          <input type="password" id="password" name="password" required aria-describedby="passwordHelp">
+          <small id="passwordHelp">Enter your secure password.</small>
+        </div>
+        
+        <button type="submit" class="btn-login" aria-label="Login to your account">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+      </form>
+      
+      <div class="links">
+        <a href="#" aria-label="Forgot password">Forgot Password?</a>
+        <div class="register-links">
+          New Admin/Staff? <a href="#" aria-label="Register as admin">Register here</a> | 
+          New Student? <a href="#" aria-label="Enroll as student">Enroll here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fade-in animation on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginBox = document.querySelector('.login-box');
+      loginBox.classList.add('fade-in');
+    });
+
+    // Form submission with validation
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // Prevent actual form submission
+      const role = document.getElementById('role').value;
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      
+      // Basic validation
+      if (!role) {
+        alert('Please select your role.');
+        return;
+      }
+      if (!username || !password) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      
+      // Demo redirection (replace with real authentication)
+      if (role === 'student') {
+        window.location.href = 'student-dashboard.html'; // Redirect to Student Dashboard
+      } else if (role === 'admin') {
+        window.location.href = 'admin-dashboard.html'; // Redirect to Admin Dashboard
+      }
+    });
+  </script>
+</body>
+</html>

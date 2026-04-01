@@ -1,0 +1,7 @@
+name,email,phone,address,student_id,username,password,enrollment_date
+John Doe,john.doe@example.com,1234567890,123 Main Street,S001,john_doe,password123,2024-01-01
+Jane Smith,jane.smith@example.com,0987654321,456 Oak Avenue,S002,jane_smith,password123,2024-01-01
+Bob Johnson,bob.johnson@example.com,1122334455,789 Pine Road,S003,bob_johnson,password123,2024-01-02
+Alice Williams,alice.williams@example.com,2233445566,321 Elm Street,S004,alice_williams,password123,2024-01-02
+Charlie Brown,charlie.brown@example.com,3344556677,654 Maple Drive,S005,charlie_brown,password123,2024-01-03
+

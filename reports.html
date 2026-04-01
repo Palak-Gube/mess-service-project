@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reports for Smart Mess - Generate and view financial, user, and inventory reports.">
+  <title>Reports - Smart Mess</title>
+  <link rel="stylesheet" href="report.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://via.placeholder.com/32x32/243b7b/ffffff?text=SM" type="image/x-icon">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+      <div class="logo">
+        <i class="fas fa-utensils"></i> Smart Mess Admin
+      </div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="user-management.html">
+          <i class="fas fa-users"></i> User Management
+        </a>
+        <a href="menu-management.html">
+          <i class="fas fa-utensils"></i> Menu Management
+        </a>
+        <a href="inventory.html">
+          <i class="fas fa-boxes"></i> Inventory
+        </a>
+        <a href="billing-finance.html">
+          <i class="fas fa-file-invoice-dollar"></i> Billing & Finance
+        </a>
+        <a href="reports.html" class="active" aria-current="page">
+          <i class="fas fa-chart-bar"></i> Reports
+        </a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" aria-label="Logout" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+      <header class="header">
+        <h1>Reports</h1>
+        <div class="user-info">
+          Welcome, <strong id="admin-name">Admin</strong>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <!-- Summary Cards -->
+      <section class="dashboard-grid">
+        <div class="card" data-tooltip="Total reports generated">
+          <div class="card-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3>Reports Generated</h3>
+          <p class="card-value">45</p>
+        </div>
+
+        <div class="card" data-tooltip="Reports pending generation">
+          <div class="card-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>Pending Reports</h3>
+          <p class="card-value">3</p>
+        </div>
+
+        <div class="card" data-tooltip="Most popular report type">
+          <div class="card-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <h3>Top Report Type</h3>
+          <p class="card-value">Financial</p>
+        </div>
+      </section>
+
+      <!-- Report Generation Section -->
+      <section class="report-generation">
+        <h2>Generate Reports</h2>
+        <div class="generation-grid">
+          <button class="btn-primary generate-btn" data-type="User Report" aria-label="Generate user report">
+            <i class="fas fa-users"></i> User Report
+          </button>
+          <button class="btn-primary generate-btn" data-type="Financial Report" aria-label="Generate financial report">
+            <i class="fas fa-dollar-sign"></i> Financial Report
+          </button>
+          <button class="btn-primary generate-btn" data-type="Inventory Report" aria-label="Generate inventory report">
+            <i class="fas fa-boxes"></i> Inventory Report
+          </button>
+          <button class="btn-primary generate-btn" data-type="Menu Report" aria-label="Generate menu report">
+            <i class="fas fa-utensils"></i> Menu Report
+          </button>
+        </div>
+      </section>
+
+      <!-- Export Options -->
+      <section class="export-options">
+        <h2>Export Data</h2>
+        <div class="export-grid">
+          <button class="btn-secondary export-btn" data-format="PDF" aria-label="Export to PDF">
+            <i class="fas fa-file-pdf"></i> Export to PDF
+          </button>
+          <button class="btn-secondary export-btn" data-format="CSV" aria-label="Export to CSV">
+            <i class="fas fa-file-csv"></i> Export to CSV
+          </button>
+        </div>
+      </section>
+
+      <!-- Recent Reports Table -->
+      <section class="reports-table-section">
+        <h2>Recent Reports</h2>
+        <table class="reports-table" id="reportsTable" aria-label="Reports table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Date Generated</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reportsTableBody">
+            <!-- Rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Sample reports data (replace with real data from backend)
+    let reports = [
+      { id: 1, type: 'User Report', date: '2023-10-01', status: 'Completed' },
+      { id: 2, type: 'Financial Report', date: '2023-10-05', status: 'Pending' },
+      { id: 3, type: 'Inventory Report', date: '2023-10-10', status: 'Completed' },
+      // Add more as needed
+    ];
+
+    // Render reports table
+    function renderTable(filteredReports = reports) {
+      const tbody = document.getElementById('reportsTableBody');
+      tbody.innerHTML = '';
+      filteredReports.forEach(report => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${report.id}</td>
+          <td>${report.type}</td>
+          <td>${report.date}</td>
+          <td><span class="status ${report.status.toLowerCase()}">${report.status}</span></td>
+          <td>
+            <button class="btn-secondary view-btn" data-id="${report.id}" aria-label="View report">View</button>
+            <button class="btn-warning delete-btn" data-id="${report.id}" aria-label="Delete report">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Generate report buttons
+    document.querySelectorAll('.generate-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const type = e.target.dataset.type;
+        alert(`Generating ${type}... (This is a demo. Integrate with backend for real generation.)`);
+        // Simulate adding a new report
+        const newId = reports.length ? Math.max(...reports.map(r => r.id)) + 1 : 1;
+        reports.push({ id: newId, type, date: new Date().toISOString().split('T')[0], status: 'Pending' });
+        renderTable();
+      });
+    });
+
+    // Export buttons
+    document.querySelectorAll('.export-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const format = e.target.dataset.format;
+        alert(`Exporting data to ${format}... (This is a demo. Integrate with libraries like jsPDF or PapaParse.)`);
+      });
+    });
+
+    // View and Delete actions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('view-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        const report = reports.find(r => r.id === id);
+        alert(`Viewing ${report.type} generated on ${report.date}. (Demo: Open in new tab or modal.)`);
+      } else if (e.target.classList.contains('delete-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        if (confirm('Are you sure you want to delete this report?')) {
+          reports = reports.filter(r => r.id !== id);
+          renderTable();
+        }
+      }
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => renderTable());
+  </script>
+</body>
+</html>

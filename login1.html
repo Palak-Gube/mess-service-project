@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Mess Tracker — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui;
+      background: #101018;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      gap: 32px;
+      padding: 28px;
+    }
+    .left {
+      flex: 1;
+      background: url('https://images.unsplash.com/photo-1505691723518-36a4c7c3c836?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=1f3a8f3b4ef8c7a3ad2c2c9b99d9f6f9') center/cover no-repeat;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px;
+    }
+    .left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0.25));
+    }
+    .brand { position: relative; z-index: 2; color:#FF7A1A; font-weight:800; font-size:28px; margin-bottom:12px; }
+    .slogan { position: relative; z-index:2; font-size:20px; color:rgba(255,255,255,0.9); }
+    .right {
+      width: 420px;
+      background: #0f1720;
+      padding: 28px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h2 { margin:0 0 4px; }
+    label { font-size:13px; color:#cbd5e1; margin-top:8px; display:block; }
+    input, select { padding:10px; border-radius:8px; border:none; background:#11131a; color:#fff; margin-top:6px; width:100%; font-family: Inter, system-ui; }
+    select { cursor:pointer; }
+    select option { background:#11131a; color:#fff; }
+    .actions { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+    .login-btn { background: linear-gradient(90deg,#ff8a1a,#ff6a00); border:none; padding:10px 14px; color:#111; font-weight:800; border-radius:8px; cursor:pointer; width:100%; margin-top:10px; }
+    .trial { margin-top:8px; background:transparent; border:1px solid #ff7a1a; color:#ff7a1a; padding:10px; border-radius:8px; font-weight:700; cursor:pointer; }
+    .links { display:flex; gap:8px; justify-content:center; margin-top:12px; }
+    a { color:#ff7a1a; text-decoration:none; }
+    .muted { color:#9aa6b2; font-size:13px; }
+    @media (max-width:880px) {
+      .container { flex-direction: column; }
+      .left { height:240px; }
+      .right { width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="brand">Smart Mess Services</div>
+      <div class="slogan">Efficient, secure, and easy meal management for Peoples.</div>
+    </div>
+
+    <div class="right">
+      <h2>Log In</h2>
+      <p class="muted">Sign in to access your dashboard</p>
+
+      <label for="role">I am a...</label>
+      <select id="role">
+        <option value="">Select your role</option>
+        <option value="student">Student/Resident</option>
+        <option value="admin">Mess Admin/Staff</option>
+      </select>
+
+      <label for="username">Username / ID</label>
+      <input id="username" type="text" placeholder="Enter your username">
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Enter password">
+
+      <div class="actions">
+        <label style="font-size:13px"><input id="remember" type="checkbox"> Remember me</label>
+        <a href="#" style="font-size:13px">Forgot password?</a>
+      </div>
+
+      <button class="login-btn" id="btnLogin">Log In</button>
+      <button class="trial" onclick="location.href='trial.html'">Start 3-Day Free Trial</button>
+
+      <div class="links muted">Don't have an account? <a href="registeration.html">Register Now</a></div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    document.getElementById('btnLogin').addEventListener('click', async function(e) {
+      e.preventDefault();
+      const role = document.getElementById('role').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (!role || !username || !password) {
+        alert('Please fill all fields');
+        return;
+      }
+
+      try {
+        const result = await auth.login(role, username, password);
+        if (result.success) {
+          localStorage.setItem('userId', result.user_id);
+          localStorage.setItem('userRole', result.role);
+          alert('Login successful! Redirecting...');
+          location.href = role === 'admin' ? 'admin-dashboard.html' : 'student-dashboard.html';
+        } else {
+          alert(result.error || 'Invalid credentials. Please check your username and password.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Connection error. Please make sure the server is running on http://localhost:5000');
+      }
+    });
+
+    // Allow Enter key to submit
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('btnLogin').click();
+      }
+    });
+  </script>
+
+</body>
+</html>
+

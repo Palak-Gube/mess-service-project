@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore - Smart Mess</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #0b0f14; color: white; scroll-behavior: smooth; }
+
+    /* NAVBAR */
+    .navbar {
+      width: 100%;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff7a1a;
+    }
+
+    .navbar .nav-buttons button {
+      margin-left: 15px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .login-btn {
+      background: transparent;
+      border: 1px solid #ff7a1a;
+      color: #ff7a1a;
+    }
+
+    .login-btn:hover {
+      background: #ff7a1a;
+      color: black;
+    }
+
+    .trial-btn {
+      background: #ff7a1a;
+      color: black;
+    }
+
+    .trial-btn:hover {
+      background: #ffa44c;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1505691723518-36a4c7c3c836?q=80') no-repeat center/cover;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%; width: 100%;
+      background: rgba(0, 0, 0, 0.65);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #cbd5e1;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-trial { background: #ff7a1a; color: #111; }
+    .btn-trial:hover { background: #ffa44c; }
+
+    /* PRICING SECTION */
+    #plans {
+      padding: 80px 20px;
+      text-align: center;
+      background: #000;
+    }
+
+    #plans h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 40px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      background: #111;
+      border: 2px solid #ff7a1a;
+      border-radius: 40px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .toggle button {
+      background: transparent;
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .toggle .active {
+      background: #ff7a1a;
+      color: #000;
+    }
+
+    .plans-container {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .plan-card {
+      border: 2px solid #ff7a1a;
+      border-radius: 12px;
+      padding: 30px;
+      width: 280px;
+      text-align: left;
+      background: #11131a;
+    }
+
+    .plan-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+    .plan-card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+
+    .plan-card button {
+      background: #ff7a1a;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .plan-card ul {
+      margin-top: 15px;
+      color: #cbd5e1;
+    }
+
+    .plan-card ul li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">Smart Mess</div>
+    <div class="nav-buttons">
+      <button class="login-btn"onclick="location.href='login1.html'">Login</button>
+      <button class="trial-btn" onclick="scrollToPlans()">Start Free Trial</button>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Explore the Smart Mess Services</h1>
+      <p>Discover our features, pricing plans, and modern digital mess management.</p>
+      <button class="btn btn-trial" onclick="scrollToPlans()">Start Free Trial</button>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section id="plans">
+    <h1>Try free for 3 days</h1>
+
+    <!-- Monthly / Yearly Toggle -->
+    <div class="toggle">
+      <button class="active">Monthly</button>
+      <button>Yearly (Save 60%)</button>
+    </div>
+
+    <div class="plans-container">
+      <!-- Fan Plan -->
+      <div class="plan-card">
+        <h2>Fan</h2>
+        <h3>₹375/year</h3>
+        <button class="nav-btn trial-btn" onclick="location.href='trial.html'">Start 7-Day Free Trial</button>
+        <ul>
+          <li>✔ No ads</li>
+          <li>✔ Access to all content</li>
+          <li>✔ HD Streaming</li>
+        </ul>
+      </div>
+
+      <!-- Mega Fan Plan -->
+      <div class="plan-card">
+        <h2>Mega Fan</h2>
+        <h3>₹475/year</h3>
+        <button>Start 7-Day Free Trial</button>
+        <ul>
+          <li>✔ No ads + all content</li>
+          <li>✔ 4 Devices at once</li>
+          <li>✔ Game Vault Access</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function scrollToPlans() {
+      document.getElementById('plans').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
+
+

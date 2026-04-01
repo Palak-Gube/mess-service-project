@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Billing & Payment for Smart Mess - View and pay your bills.">
+  <title>Billing & Payment - Smart Mess</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar - Matching Dashboard */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #11131a 0%, #0a0e1a 100%);
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 122, 26, 0.1);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding: 0 20px;
+    }
+
+    .nav-links {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 15px;
+    }
+
+    .nav-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(255, 122, 26, 0.1);
+      color: #ff7a1a;
+      transform: translateX(5px);
+    }
+
+    .nav-links a i {
+      width: 20px;
+      font-size: 1.1rem;
+    }
+
+    .logout-link {
+      padding: 20px 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+    }
+
+    .logout-link a {
+      color: #ff6b6b;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .logout-link a:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 30px 40px;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 122, 26, 0.2);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .user-info strong {
+      color: #ff7a1a;
+    }
+
+    /* Section */
+    .section {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section h2 i {
+      color: #ff7a1a;
+    }
+
+    /* Billing Card */
+    .billing-card {
+      background: linear-gradient(135deg, rgba(255, 122, 26, 0.1), rgba(255, 154, 77, 0.05));
+      border: 1px solid rgba(255, 122, 26, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .billing-card h3 {
+      font-size: 1.5rem;
+      color: #ff7a1a;
+      margin-bottom: 15px;
+    }
+
+    .billing-card p {
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .bill-details {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .bill-details p {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #cbd5e1;
+      margin: 0;
+    }
+
+    .bill-details strong {
+      color: #fff;
+    }
+
+    .bill-details span {
+      color: #ff7a1a;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .pay-now-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #fff;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+      margin-top: 20px;
+    }
+
+    .pay-now-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 122, 26, 0.4);
+    }
+
+    /* Bills Table */
+    .bills-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .bills-table th {
+      text-align: left;
+      padding: 15px;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border-bottom: 2px solid rgba(255, 122, 26, 0.2);
+    }
+
+    .bills-table td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+
+    .bills-table tr:hover {
+      background: rgba(255, 122, 26, 0.05);
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status.paid {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+    }
+
+    .status.pending {
+      background: rgba(255, 152, 0, 0.2);
+      color: #ff9800;
+    }
+
+    .pay-btn {
+      background: linear-gradient(135deg, #4caf50, #66bb6a);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pay-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 122, 26, 0.2);
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .close {
+      color: #94a3b8;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .close:hover {
+      color: #ff7a1a;
+    }
+
+    .modal-content h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .modal-content p {
+      color: #94a3b8;
+      margin-bottom: 25px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 122, 26, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+      .bills-table {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar - Matching Dashboard -->
+    <aside class="sidebar">
+      <div class="logo">🍽️ Smart Mess</div>
+      <nav class="nav-links">
+        <a href="student-dashboard.html">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="menu-rating.html">
+          <i class="fas fa-utensils"></i> Menu & Rating
+        </a>
+        <a href="meal-packages.html">
+          <i class="fas fa-box"></i> Mess Packages
+        </a>
+        <a href="billing-payment.html" class="active">
+          <i class="fas fa-receipt"></i> Billing & Payments
+        </a>
+        <a href="profile.html">
+          <i class="fas fa-user-circle"></i> Profile
+        </a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1>Billing & Payment</h1>
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, <strong id="user-name">Student</strong></span>
+        </div>
+      </header>
+
+      <!-- Billing Summary Card -->
+      <section class="billing-card">
+        <h3><i class="fas fa-credit-card"></i> Billing & Payment</h3>
+        <p>View and clear your mess dues.</p>
+        <div class="bill-details">
+          <p><strong>Current Dues:</strong> <span id="current-due">₹0.00</span></p>
+          <p><strong>Next Due Date:</strong> <span id="next-due-date">-</span></p>
+          <button class="pay-now-btn" id="payAllBtn">
+            <i class="fas fa-credit-card"></i> Pay Now
+          </button>
+        </div>
+      </section>
+
+      <!-- Bills Table -->
+      <section class="section">
+        <h2><i class="fas fa-receipt"></i> Your Bills</h2>
+        <table class="bills-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Description</th>
+              <th>Amount (₹)</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="billsTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                <p>Loading bills...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal" id="paymentModal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Make Payment</h2>
+      <p id="paymentDetails">Processing payment...</p>
+      <button class="btn-primary" id="confirmPayment">Confirm Payment</button>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+
+    // Redirect if not logged in
+    if (!userId || userRole !== 'student') {
+      alert('Please login as a student to access this page.');
+      window.location.href = 'login1.html';
+    }
+
+    let billsCache = [];
+
+    // Load student name
+    async function loadStudentName() {
+      try {
+        const profile = await student.getProfile(userId);
+        if (profile && !profile.error) {
+          document.getElementById('user-name').textContent = profile.name || 'Student';
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    function updateSummaryCard(bills) {
+      const pendingBills = bills.filter(b => b.status === 'Pending' || b.status === 'pending');
+      const totalDue = pendingBills.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+      const dueSpan = document.getElementById('current-due');
+      const nextDueSpan = document.getElementById('next-due-date');
+
+      if (dueSpan) dueSpan.textContent = `₹${totalDue.toLocaleString()}`;
+
+      if (pendingBills.length > 0) {
+        const nextDue = pendingBills
+          .map(b => new Date(b.due_date || b.end_date || b.created_at))
+          .filter(d => !isNaN(d.getTime()))
+          .sort((a, b) => a - b)[0];
+        if (nextDueSpan) nextDueSpan.textContent = nextDue ? nextDue.toLocaleDateString() : '-';
+      } else {
+        if (nextDueSpan) nextDueSpan.textContent = '-';
+      }
+    }
+
+    // Load bills from backend
+    async function loadBills() {
+      try {
+        const res = await billing.getBills(userId);
+        const tbody = document.getElementById('billsTableBody');
+        
+        if (res && !res.error && res.length > 0) {
+          billsCache = res;
+          tbody.innerHTML = res.map(bill => `
+            <tr>
+              <td>${bill.id}</td>
+              <td>${bill.description || 'Subscription'}</td>
+              <td>₹${parseFloat(bill.amount || 0).toLocaleString()}</td>
+              <td>${bill.due_date ? new Date(bill.due_date).toLocaleDateString() : '-'}</td>
+              <td><span class="status ${(bill.status || '').toLowerCase()}">${bill.status || 'Pending'}</span></td>
+              <td>
+                ${(bill.status || '').toLowerCase() === 'pending' ? 
+                  `<button class="pay-btn" data-id="${bill.id}" data-amount="${bill.amount}">Pay Now</button>` : 
+                  '<span style="color: #4caf50;">Paid</span>'}
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          billsCache = [];
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-receipt"></i><p>No bills found</p></td></tr>';
+        }
+
+        updateSummaryCard(billsCache);
+      } catch (error) {
+        console.error('Error loading bills:', error);
+        document.getElementById('billsTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-exclamation-circle"></i><p>Error loading bills. Please try again later.</p></td></tr>';
+      }
+    }
+
+    // Pay now actions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('pay-now-btn') || e.target.classList.contains('pay-btn')) {
+        const isSummaryButton = e.target.classList.contains('pay-now-btn');
+
+        let amount = 0;
+        if (isSummaryButton) {
+          amount = billsCache
+            .filter(b => (b.status || '').toLowerCase() === 'pending')
+            .reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+        } else {
+          const billId = e.target.dataset.id;
+          const bill = billsCache.find(b => String(b.id) === String(billId));
+          amount = bill ? parseFloat(bill.amount || 0) : 0;
+        }
+
+        if (!amount) {
+          alert('No pending amount to pay.');
+          return;
+        }
+
+        document.getElementById('paymentDetails').textContent = `Pay ₹${amount.toLocaleString()} for your dues?`;
+        document.getElementById('paymentModal').style.display = 'block';
+
+        // Confirm payment (demo-only)
+        document.getElementById('confirmPayment').onclick = () => {
+          alert(`✅ Payment of ₹${amount.toLocaleString()} successful! (Demo)`);
+          document.getElementById('paymentModal').style.display = 'none';
+          // Reload bills to refresh status
+          loadBills();
+        };
+      }
+    });
+
+    // Modal close
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('paymentModal').style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('paymentModal')) {
+        document.getElementById('paymentModal').style.display = 'none';
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadStudentName();
+      await loadBills();
+    });
+  </script>
+</body>
+</html>

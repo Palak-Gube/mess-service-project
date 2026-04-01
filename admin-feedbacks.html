@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Feedbacks - Admin</title>
+  <link rel="stylesheet" href="admin dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .feedbacks-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .feedbacks-table th, .feedbacks-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    .feedbacks-table th { background: #243b7b; color: white; }
+    .rating-stars { color: #ff9800; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo"><i class="fas fa-utensils"></i> Smart Mess Admin</div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="admin-feedbacks.html" class="active"><i class="fas fa-comments"></i> Feedbacks</a>
+        <a href="admin-subscriptions.html"><i class="fas fa-list"></i> Subscriptions</a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="header">
+        <h1>Student Feedbacks</h1>
+      </header>
+      <div id="feedbacksContainer">
+        <p>Loading feedbacks...</p>
+      </div>
+    </main>
+  </div>
+  <script src="api.js"></script>
+  <script>
+    async function loadFeedbacks() {
+      const feedbacks = await admin.getAllFeedbacks();
+      const container = document.getElementById('feedbacksContainer');
+      
+      if (feedbacks && !feedbacks.error && feedbacks.length > 0) {
+        container.innerHTML = `
+          <table class="feedbacks-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Student ID</th>
+                <th>Feedback</th>
+                <th>Rating</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${feedbacks.map(f => `
+                <tr>
+                  <td>${f.student_name}</td>
+                  <td>${f.student_id}</td>
+                  <td>${f.feedback_text}</td>
+                  <td><span class="rating-stars">${'★'.repeat(f.rating || 0)}</span></td>
+                  <td>${new Date(f.created_at).toLocaleDateString()}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        container.innerHTML = '<p>No feedbacks available yet.</p>';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', loadFeedbacks);
+  </script>
+</body>
+</html>
+
+

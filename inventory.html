@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Inventory Management for Smart Mess - View, add, edit, and manage inventory items.">
+  <title>Inventory - Smart Mess</title>
+  <link rel="stylesheet" href="user management.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://via.placeholder.com/32x32/243b7b/ffffff?text=SM" type="image/x-icon">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+      <div class="logo">
+        <i class="fas fa-utensils"></i> Smart Mess Admin
+      </div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="user-management.html">
+          <i class="fas fa-users"></i> User Management
+        </a>
+        <a href="menu-management.html">
+          <i class="fas fa-utensils"></i> Menu Management
+        </a>
+        <a href="inventory.html" class="active" aria-current="page">
+          <i class="fas fa-boxes"></i> Inventory
+        </a>
+        <a href="billing-finance.html">
+          <i class="fas fa-file-invoice-dollar"></i> Billing & Finance
+        </a>
+        <a href="reports.html">
+          <i class="fas fa-chart-bar"></i> Reports
+        </a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" aria-label="Logout" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+      <header class="header">
+        <h1>Inventory Management</h1>
+        <div class="user-info">
+          Welcome, <strong id="admin-name">Admin</strong>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <!-- Summary Cards -->
+      <section class="dashboard-grid" style="margin-bottom: 30px;">
+        <div class="card">
+          <div class="card-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <h3>Total Items</h3>
+          <p class="card-value" id="total-items">0</p>
+        </div>
+        <div class="card alert">
+          <div class="card-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3>Low Stock Items</h3>
+          <p class="card-value" id="low-stock-count">0</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3>In Stock Items</h3>
+          <p class="card-value" id="in-stock-count">0</p>
+        </div>
+      </section>
+
+      <!-- Controls Section -->
+      <section class="controls">
+        <div class="search-filter">
+          <input type="text" id="searchInput" placeholder="Search by item name or supplier..." aria-label="Search inventory items">
+          <select id="categoryFilter" aria-label="Filter by category">
+            <option value="">All Categories</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Meat">Meat</option>
+            <option value="Spices">Spices</option>
+            <option value="Dairy">Dairy</option>
+            <option value="Grains">Grains</option>
+            <option value="Beverages">Beverages</option>
+          </select>
+          <select id="stockFilter" aria-label="Filter by stock level">
+            <option value="">All Stock Levels</option>
+            <option value="low">Low Stock (< 10)</option>
+            <option value="normal">Normal Stock</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="addItemBtn" aria-label="Add new inventory item">
+          <i class="fas fa-plus"></i> Add Item
+        </button>
+      </section>
+
+      <!-- Inventory Table -->
+      <section class="inventory-table-section">
+        <table class="inventory-table" id="inventoryTable" aria-label="Inventory management table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Item Name</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+              <th>Supplier</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <!-- Rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Modal for Add/Edit Inventory Item -->
+      <div class="modal" id="inventoryModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-content">
+          <span class="close" id="closeModal" aria-label="Close modal">&times;</span>
+          <h2 id="modalTitle">Add Inventory Item</h2>
+          <form id="inventoryForm">
+            <label for="itemName">Item Name:</label>
+            <input type="text" id="itemName" required aria-describedby="nameHelp">
+            <small id="nameHelp">Enter the name of the inventory item.</small>
+
+            <label for="itemCategory">Category:</label>
+            <select id="itemCategory" required>
+              <option value="Vegetables">Vegetables</option>
+              <option value="Meat">Meat</option>
+              <option value="Spices">Spices</option>
+              <option value="Dairy">Dairy</option>
+              <option value="Grains">Grains</option>
+              <option value="Beverages">Beverages</option>
+            </select>
+
+            <label for="itemMinStock">Minimum Stock Level:</label>
+            <input type="number" id="itemMinStock" min="1" value="10" required aria-describedby="minStockHelp">
+            <small id="minStockHelp">Alert when stock falls below this level.</small>
+
+            <label for="itemQuantity">Quantity:</label>
+            <input type="number" id="itemQuantity" min="0" required aria-describedby="quantityHelp">
+            <small id="quantityHelp">Enter the current quantity in stock.</small>
+
+            <label for="itemUnit">Unit:</label>
+            <select id="itemUnit" required>
+              <option value="kg">kg</option>
+              <option value="pcs">pcs</option>
+              <option value="liters">liters</option>
+            </select>
+
+            <label for="itemSupplier">Supplier:</label>
+            <input type="text" id="itemSupplier" required aria-describedby="supplierHelp">
+            <small id="supplierHelp">Enter the supplier name.</small>
+
+            <button type="submit" class="btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Inventory data (can be extended with backend API)
+    let inventoryItems = [
+      { id: 1, name: 'Rice', category: 'Grains', quantity: 50, unit: 'kg', supplier: 'Local Farm', minStock: 20 },
+      { id: 2, name: 'Wheat Flour', category: 'Grains', quantity: 30, unit: 'kg', supplier: 'Local Farm', minStock: 15 },
+      { id: 3, name: 'Chicken', category: 'Meat', quantity: 5, unit: 'kg', supplier: 'Meat Suppliers Inc.', minStock: 10 },
+      { id: 4, name: 'Potatoes', category: 'Vegetables', quantity: 8, unit: 'kg', supplier: 'Vegetable Market', minStock: 10 },
+      { id: 5, name: 'Onions', category: 'Vegetables', quantity: 12, unit: 'kg', supplier: 'Vegetable Market', minStock: 10 },
+      { id: 6, name: 'Turmeric', category: 'Spices', quantity: 20, unit: 'kg', supplier: 'Spice World', minStock: 5 },
+      { id: 7, name: 'Red Chili Powder', category: 'Spices', quantity: 15, unit: 'kg', supplier: 'Spice World', minStock: 5 },
+      { id: 8, name: 'Milk', category: 'Dairy', quantity: 25, unit: 'liters', supplier: 'Dairy Farm', minStock: 10 },
+      { id: 9, name: 'Butter', category: 'Dairy', quantity: 3, unit: 'kg', supplier: 'Dairy Farm', minStock: 5 },
+      { id: 10, name: 'Cooking Oil', category: 'Grains', quantity: 18, unit: 'liters', supplier: 'Oil Suppliers', minStock: 10 },
+    ];
+    let editingItemId = null;
+
+    // Update summary stats
+    function updateStats() {
+      const totalItems = inventoryItems.length;
+      const lowStockItems = inventoryItems.filter(item => item.quantity < (item.minStock || 10)).length;
+      const inStockItems = totalItems - lowStockItems;
+
+      document.getElementById('total-items').textContent = totalItems;
+      document.getElementById('low-stock-count').textContent = lowStockItems;
+      document.getElementById('in-stock-count').textContent = inStockItems;
+    }
+
+    // Render inventory table
+    function renderTable(filteredItems = inventoryItems) {
+      const tbody = document.getElementById('inventoryTableBody');
+      tbody.innerHTML = '';
+      
+      if (filteredItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">No items found matching your criteria.</td></tr>';
+        return;
+      }
+
+      filteredItems.forEach(item => {
+        const minStock = item.minStock || 10;
+        const isLowStock = item.quantity < minStock;
+        const stockPercentage = Math.min((item.quantity / (minStock * 2)) * 100, 100);
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td><strong>${item.name}</strong></td>
+          <td><span style="padding: 4px 8px; background: rgba(36, 59, 123, 0.1); border-radius: 4px; color: #243b7b;">${item.category}</span></td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="${isLowStock ? 'low-stock' : ''}" style="font-weight: ${isLowStock ? '700' : '500'};">${item.quantity} ${item.unit}</span>
+              <div style="width: 60px; height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden;">
+                <div style="width: ${stockPercentage}%; height: 100%; background: ${isLowStock ? '#f44336' : '#4caf50'}; transition: width 0.3s;"></div>
+              </div>
+            </div>
+          </td>
+          <td>${item.unit}</td>
+          <td>${item.supplier}</td>
+          <td>
+            <button class="btn-secondary edit-btn" data-id="${item.id}" aria-label="Edit inventory item">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-warning delete-btn" data-id="${item.id}" aria-label="Delete inventory item">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+      
+      updateStats();
+    }
+
+    // Search and filter
+    document.getElementById('searchInput').addEventListener('input', filterItems);
+    document.getElementById('categoryFilter').addEventListener('change', filterItems);
+    document.getElementById('stockFilter').addEventListener('change', filterItems);
+
+    function filterItems() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const stockFilter = document.getElementById('stockFilter').value;
+      const filtered = inventoryItems.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchTerm) || item.supplier.toLowerCase().includes(searchTerm);
+        const matchesCategory = categoryFilter === '' || item.category === categoryFilter;
+        const minStock = item.minStock || 10;
+        const matchesStock = stockFilter === '' || 
+          (stockFilter === 'low' && item.quantity < minStock) || 
+          (stockFilter === 'normal' && item.quantity >= minStock);
+        return matchesSearch && matchesCategory && matchesStock;
+      });
+      renderTable(filtered);
+    }
+
+    // Modal controls
+    const modal = document.getElementById('inventoryModal');
+    const closeModal = document.getElementById('closeModal');
+    const inventoryForm = document.getElementById('inventoryForm');
+
+    document.getElementById('addItemBtn').addEventListener('click', () => {
+      editingItemId = null;
+      document.getElementById('modalTitle').textContent = 'Add Inventory Item';
+      inventoryForm.reset();
+      modal.style.display = 'block';
+      modal.setAttribute('aria-hidden', 'false');
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    // Form submission
+    inventoryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('itemName').value;
+      const category = document.getElementById('itemCategory').value;
+      const quantity = parseInt(document.getElementById('itemQuantity').value);
+      const unit = document.getElementById('itemUnit').value;
+      const supplier = document.getElementById('itemSupplier').value;
+      const minStock = parseInt(document.getElementById('itemMinStock').value) || 10;
+
+      if (editingItemId) {
+        // Edit existing item
+        const item = inventoryItems.find(i => i.id === editingItemId);
+        item.name = name;
+        item.category = category;
+        item.quantity = quantity;
+        item.unit = unit;
+        item.supplier = supplier;
+        item.minStock = minStock;
+        alert('Item updated successfully!');
+      } else {
+        // Add new item
+        const newId = inventoryItems.length ? Math.max(...inventoryItems.map(i => i.id)) + 1 : 1;
+        inventoryItems.push({ id: newId, name, category, quantity, unit, supplier, minStock });
+        alert('Item added successfully!');
+      }
+
+      renderTable();
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+      inventoryForm.reset();
+    });
+
+    // Edit and Delete actions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('edit-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        const item = inventoryItems.find(i => i.id === id);
+        editingItemId = id;
+        document.getElementById('modalTitle').textContent = 'Edit Inventory Item';
+        document.getElementById('itemName').value = item.name;
+        document.getElementById('itemCategory').value = item.category;
+        document.getElementById('itemQuantity').value = item.quantity;
+        document.getElementById('itemUnit').value = item.unit;
+        document.getElementById('itemSupplier').value = item.supplier;
+        document.getElementById('itemMinStock').value = item.minStock || 10;
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+      } else if (e.target.classList.contains('delete-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        if (confirm('Are you sure you want to delete this inventory item?')) {
+          inventoryItems = inventoryItems.filter(i => i.id !== id);
+          renderTable();
+        }
+      }
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable();
+      updateStats();
+    });
+  </script>
+</body>
+</html>

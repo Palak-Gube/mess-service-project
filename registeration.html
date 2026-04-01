@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Mess Tracker — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui;
+      background: #101018;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      gap: 32px;
+      padding: 28px;
+    }
+    .left {
+      flex: 1;
+      background: url('https://images.unsplash.com/photo-1505691723518-36a4c7c3c836?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px;
+    }
+    .left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0.25));
+    }
+    .brand { position: relative; z-index:2; color:#FF7A1A; font-weight:800; font-size:28px; margin-bottom:12px; }
+    .slogan { position:relative; z-index:2; font-size:20px; color:rgba(255,255,255,0.9); }
+    
+    .right {
+      width: 420px;
+      background: #0f1720;
+      padding: 28px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h2 { margin:0 0 4px; }
+    label { font-size:13px; color:#cbd5e1; margin-top:10px; display:block; }
+    input, textarea, select {
+      padding:10px;
+      border-radius:8px;
+      border:none;
+      background:#11131a;
+      color:#fff;
+      margin-top:6px;
+      width:100%;
+      resize: none;
+      font-family: Inter, system-ui;
+    }
+    select { cursor:pointer; }
+    select option { background:#11131a; color:#fff; }
+
+    .register-btn {
+      background: linear-gradient(90deg,#ff8a1a,#ff6a00);
+      border:none;
+      padding:10px 14px;
+      color:#111;
+      font-weight:800;
+      border-radius:8px;
+      cursor:pointer;
+      width:100%;
+      margin-top:14px;
+    }
+    .login-link { text-align:center; margin-top:10px; font-size:13px; }
+    a { color:#ff7a1a; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .muted { color:#9aa6b2; font-size:13px; }
+    @media(max-width:880px) {
+      .container { flex-direction:column; }
+      .left { height:240px; }
+      .right { width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="brand">Smart Mess Services</div>
+      <div class="slogan">Join us and simplify your meal & mess management.</div>
+    </div>
+
+    <div class="right">
+      <h2>Create Account</h2>
+      <p class="muted">Register to get started</p>
+
+      <label for="role">I am a...</label>
+      <select id="role" required>
+        <option value="">Select your role</option>
+        <option value="student">Student/Resident</option>
+        <option value="admin">Mess Admin/Staff</option>
+      </select>
+
+      <label for="name">Full Name</label>
+      <input id="name" type="text" placeholder="Enter your name" required>
+
+      <label for="username">Username</label>
+      <input id="username" type="text" placeholder="Choose a username" required>
+
+      <label for="email">Email Address</label>
+      <input id="email" type="email" placeholder="Enter your email" required>
+
+      <label for="phone">Phone Number</label>
+      <input id="phone" type="tel" placeholder="Enter your phone number">
+
+      <label for="address">Address</label>
+      <textarea id="address" rows="3" placeholder="Enter your address"></textarea>
+
+      <label for="student_id">Student / Employee ID</label>
+      <input id="student_id" type="text" placeholder="Enter your ID (optional - will auto-generate if left blank)">
+      <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 5px;">
+        💡 Leave blank to auto-generate a unique ID
+      </small>
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Create a password" required>
+
+      <button class="register-btn" onclick="registerNow()">Register</button>
+
+      <div class="login-link muted">
+        Already have an account? <a href="login1.html">Log In</a>
+      </div>
+    </div>
+  </div>
+
+<script src="api.js"></script>
+<script>
+  async function registerNow() {
+    const role = document.getElementById('role').value;
+    const name = document.getElementById('name').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const student_id = document.getElementById('student_id').value.trim();
+    const password = document.getElementById('password').value;
+
+    // Validation
+    if (!role || !name || !username || !email || !password) {
+      alert('Please fill all required fields (Role, Name, Username, Email, Password)');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters long');
+      return;
+    }
+
+    try {
+      const registrationData = {
+        role: role,
+        username: username,
+        password: password,
+        name: name,
+        email: email,
+        phone: phone || '',
+        address: address || '',
+        student_id: student_id || (role === 'student' ? `S${Date.now()}` : `A${Date.now()}`),
+        admin_id: role === 'admin' ? (student_id || `A${Date.now()}`) : undefined
+      };
+
+      const result = await auth.register(registrationData);
+      
+      if (result.success) {
+        alert(`✅ Registration successful! Welcome, ${name}!\n\nYou can now log in with your credentials.`);
+        window.location.href = 'login1.html';
+      } else {
+        // Show user-friendly error message
+        let errorMessage = result.error || 'Registration failed. Please try again.';
+        
+        // Convert technical errors to user-friendly messages
+        if (errorMessage.includes('UNIQUE constraint failed')) {
+          if (errorMessage.includes('student_id')) {
+            errorMessage = '⚠️ This Student ID is already registered.\n\nPlease use a different Student ID or leave it blank to auto-generate one.';
+          } else if (errorMessage.includes('email')) {
+            errorMessage = '⚠️ This email address is already registered.\n\nPlease use a different email or try logging in instead.';
+          } else if (errorMessage.includes('username')) {
+            errorMessage = '⚠️ This username is already taken.\n\nPlease choose a different username.';
+          } else {
+            errorMessage = '⚠️ This information is already registered.\n\nPlease check your details and try again.';
+          }
+        } else if (errorMessage.includes('already exists') || errorMessage.includes('already registered')) {
+          // Already user-friendly, just ensure it's clear
+          errorMessage = '⚠️ ' + errorMessage;
+        }
+        
+        alert(errorMessage);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('❌ Connection error!\n\nPlease make sure the server is running.\n\nIf the problem continues, please contact support.');
+    }
+  }
+
+  // Allow Enter key to submit
+  document.getElementById('password').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      registerNow();
+    }
+  });
+</script>
+</body>
+</html>
+

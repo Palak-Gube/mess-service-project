@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weekly Meal Schedule - Smart Mess</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6fa;
+      color: #333;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-weight: 600;
+      margin-bottom: 40px;
+      color: #243b7b;
+      text-align: center;
+      font-size: 2.5rem;
+    }
+
+    /* Table container for nice shadow and radius */
+    .meal-table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: separate;
+      border-spacing: 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      border: none;
+    }
+
+    /* Table header */
+    .meal-table thead tr {
+      background-color: #4caf50;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .meal-table th,
+    .meal-table td {
+      padding: 20px 25px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    /* Rounded corners on table header */
+    .meal-table thead tr th:first-child {
+      border-top-left-radius: 16px;
+    }
+    .meal-table thead tr th:last-child {
+      border-top-right-radius: 16px;
+    }
+
+    /* Alternating row colors */
+    .meal-table tbody tr:nth-of-type(even) td {
+      background-color: #f9f9f9;
+    }
+
+    /* Hover effect on rows */
+    .meal-table tbody tr:hover td {
+      background-color: #e0f7fa;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Meal details styling */
+    .meal-details p {
+      margin: 6px 0;
+    }
+
+    /* Image styling */
+    .meal-image {
+      width: 140px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-right: 20px;
+      vertical-align: middle;
+      float: left;
+    }
+
+    /* Meal description container */
+    .meal-desc {
+      overflow: hidden;
+      max-width: calc(100% - 160px);
+    }
+
+    /* Day column styling */
+    .meal-table td:first-child {
+      font-weight: 600;
+      color: #1a2c61;
+      width: 110px;
+      user-select: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+
+      .meal-table {
+        font-size: 14px;
+      }
+
+      .meal-image {
+        width: 110px;
+        height: 70px;
+        margin-right: 15px;
+      }
+
+      .meal-table td:first-child {
+        width: 90px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Weekly Meal Schedule</h1>
+
+  <table class="meal-table" aria-label="Weekly mess menu schedule">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Meals</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Monday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1604908813520-45a935b200ee?auto=format&fit=crop&w=140&q=80" alt="Pancakes and juice" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> Pancakes, Fruit Juice, Tea/Coffee</p>
+            <p><strong>Lunch:</strong> Veg Biryani, Raita, Salad</p>
+            <p><strong>Dinner:</strong> Paneer Butter Masala, Roti, Rice</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Tuesday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=140&q=80" alt="Omelette and toast" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> Omelette, Toast, Tea/Coffee</p>
+            <p><strong>Lunch:</strong> Chole Bhature, Salad</p>
+            <p><strong>Dinner:</strong> Dal Tadka, Jeera Rice, Veg Curry</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Wednesday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=140&q=80" alt="Idli and sambar" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> Idli, Sambar, Coconut Chutney</p>
+            <p><strong>Lunch:</strong> Vegetable Pulao, Curd</p>
+            <p><strong>Dinner:</strong> Rajma, Rice, Salad</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Thursday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1603046891490-9e4871370032?auto=format&fit=crop&w=140&q=80" alt="Poha and tea" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> Poha, Tea</p>
+            <p><strong>Lunch:</strong> Matar Paneer, Roti, Rice</p>
+            <p><strong>Dinner:</strong> Chicken Curry, Rice, Salad</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Friday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1566228013996-4a45b9c8367b?auto=format&fit=crop&w=140&q=80" alt="Paratha and pickle" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> Paratha, Pickle, Tea/Coffee</p>
+            <p><strong>Lunch:</strong> Veg Khichdi, Raita</p>
+            <p><strong>Dinner:</strong> Fish Curry, Rice, Veg Stir Fry</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Saturday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=140&q=80" alt="Dosa and chutney" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> Dosa, Coconut Chutney</p>
+            <p><strong>Lunch:</strong> Paneer Biryani, Salad</p>
+            <p><strong>Dinner:</strong> Mixed Veg Curry, Roti, Rice</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Sunday</td>
+        <td>
+          <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=140&q=80" alt="French toast and salad" class="meal-image" />
+          <div class="meal-desc">
+            <p><strong>Breakfast:</strong> French Toast, Fruit Salad</p>
+            <p><strong>Lunch:</strong> Mutton Curry, Rice, Roti</p>
+            <p><strong>Dinner:</strong> Light Soup, Sandwiches</p>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

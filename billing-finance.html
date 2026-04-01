@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Billing & Finance for Smart Mess - Manage bills, payments, and financial reports.">
+  <title>Billing & Finance - Smart Mess</title>
+  <link rel="stylesheet" href="billing-finance.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://via.placeholder.com/32x32/243b7b/ffffff?text=SM" type="image/x-icon">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+      <div class="logo">
+        <i class="fas fa-utensils"></i> Smart Mess Admin
+      </div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="user-management.html">
+          <i class="fas fa-users"></i> User Management
+        </a>
+        <a href="menu-management.html">
+          <i class="fas fa-utensils"></i> Menu Management
+        </a>
+        <a href="inventory.html">
+          <i class="fas fa-boxes"></i> Inventory
+        </a>
+        <a href="billing-finance.html" class="active" aria-current="page">
+          <i class="fas fa-file-invoice-dollar"></i> Billing & Finance
+        </a>
+        <a href="reports.html">
+          <i class="fas fa-chart-bar"></i> Reports
+        </a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" aria-label="Logout" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+      <header class="header">
+        <h1>Billing & Finance</h1>
+        <div class="user-info">
+          Welcome, <strong id="admin-name">Admin</strong>
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </header>
+
+      <!-- Summary Cards -->
+      <section class="dashboard-grid">
+        <div class="card" data-tooltip="Total revenue generated">
+          <div class="card-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3>Total Revenue</h3>
+          <p class="card-value">₹ 1,25,000</p>
+        </div>
+
+        <div class="card" data-tooltip="Pending payments to collect">
+          <div class="card-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>Pending Payments</h3>
+          <p class="card-value">₹ 24,500</p>
+        </div>
+
+        <div class="card" data-tooltip="Revenue for this month">
+          <div class="card-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <h3>Monthly Revenue</h3>
+          <p class="card-value">₹ 45,000</p>
+        </div>
+      </section>
+
+      <!-- Controls Section -->
+      <section class="controls">
+        <div class="search-filter">
+          <input type="text" id="searchInput" placeholder="Search by user..." aria-label="Search bills">
+          <select id="statusFilter" aria-label="Filter by status">
+            <option value="">All Statuses</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+          </select>
+          <input type="date" id="dateFilter" aria-label="Filter by date">
+        </div>
+        <button class="btn-primary" id="addBillBtn" aria-label="Add new bill">
+          <i class="fas fa-plus"></i> Add Bill
+        </button>
+      </section>
+
+      <!-- Bills Table -->
+      <section class="bills-table-section">
+        <table class="bills-table" id="billsTable" aria-label="Billing and finance table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Student</th>
+              <th>Package</th>
+              <th>Amount (₹)</th>
+              <th>Start Date</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="billsTableBody">
+            <!-- Rows will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Modal for Add/Edit Bill -->
+      <div class="modal" id="billModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-content">
+          <span class="close" id="closeModal" aria-label="Close modal">&times;</span>
+          <h2 id="modalTitle">Add Bill</h2>
+          <form id="billForm">
+            <label for="billUser">Student:</label>
+            <select id="billUser" required aria-describedby="userHelp">
+              <option value="">Select Student</option>
+            </select>
+            <small id="userHelp">Select a student from the list.</small>
+
+            <label for="billAmount">Amount (₹):</label>
+            <input type="number" id="billAmount" min="0" step="0.01" required aria-describedby="amountHelp">
+            <small id="amountHelp">Enter the bill amount in rupees.</small>
+
+            <label for="billDate">Date:</label>
+            <input type="date" id="billDate" required aria-describedby="dateHelp">
+            <small id="dateHelp">Select the bill date.</small>
+
+            <label for="billStatus">Status:</label>
+            <select id="billStatus" required>
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+            </select>
+
+            <button type="submit" class="btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    // Bills data from backend
+    let bills = [];
+    let editingBillId = null;
+    let allStudents = [];
+
+    // Load all students for dropdown
+    async function loadStudents() {
+      try {
+        allStudents = await admin.getAllStudents();
+        if (allStudents && !allStudents.error) {
+          // Populate student dropdown in modal
+          const billUserSelect = document.getElementById('billUser');
+          if (billUserSelect && billUserSelect.tagName === 'SELECT') {
+            billUserSelect.innerHTML = '<option value="">Select Student</option>' +
+              allStudents.map(s => `<option value="${s.id}">${s.name} (${s.student_id})</option>`).join('');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading students:', error);
+      }
+    }
+
+    // Load bills from backend
+    async function loadBills() {
+      try {
+        // Get all subscriptions as bills
+        const subscriptions = await admin.getAllSubscriptions();
+        if (subscriptions && !subscriptions.error) {
+          bills = subscriptions.map(sub => ({
+            id: sub.id,
+            user: `${sub.student_name} (${sub.student_id})`,
+            userId: sub.student_id,
+            amount: sub.amount_paid,
+            date: sub.start_date,
+            dueDate: sub.end_date,
+            status: sub.status === 'active' ? 'Paid' : 'Pending',
+            packageName: sub.package_name
+          }));
+          
+          // Calculate summary stats
+          const totalRevenue = bills.reduce((sum, b) => sum + (b.status === 'Paid' ? b.amount : 0), 0);
+          const pendingPayments = bills.reduce((sum, b) => sum + (b.status === 'Pending' ? b.amount : 0), 0);
+          const monthlyRevenue = bills
+            .filter(b => {
+              const billDate = new Date(b.date);
+              const now = new Date();
+              return billDate.getMonth() === now.getMonth() && billDate.getFullYear() === now.getFullYear();
+            })
+            .reduce((sum, b) => sum + (b.status === 'Paid' ? b.amount : 0), 0);
+
+          // Update summary cards
+          document.querySelector('.card:nth-child(1) .card-value').textContent = `₹ ${totalRevenue.toLocaleString()}`;
+          document.querySelector('.card:nth-child(2) .card-value').textContent = `₹ ${pendingPayments.toLocaleString()}`;
+          document.querySelector('.card:nth-child(3) .card-value').textContent = `₹ ${monthlyRevenue.toLocaleString()}`;
+
+          renderTable();
+        }
+      } catch (error) {
+        console.error('Error loading bills:', error);
+        alert('Error loading bills. Please check if the server is running.');
+      }
+    }
+
+    // Render bills table
+    function renderTable(filteredBills = bills) {
+      const tbody = document.getElementById('billsTableBody');
+      tbody.innerHTML = '';
+      filteredBills.forEach(bill => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${bill.id}</td>
+          <td>${bill.user}</td>
+          <td>${bill.packageName || 'N/A'}</td>
+          <td>₹${bill.amount.toLocaleString()}</td>
+          <td>${new Date(bill.date).toLocaleDateString()}</td>
+          <td>${bill.dueDate ? new Date(bill.dueDate).toLocaleDateString() : 'N/A'}</td>
+          <td><span class="status ${bill.status.toLowerCase()}">${bill.status}</span></td>
+          <td>
+            ${bill.status === 'Pending' ? `<button class="btn-success mark-paid-btn" data-id="${bill.id}" aria-label="Mark as paid">Mark Paid</button>` : ''}
+            <button class="btn-secondary" onclick="window.print()" aria-label="Print bill">Print</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Search and filter
+    document.getElementById('searchInput').addEventListener('input', filterBills);
+    document.getElementById('statusFilter').addEventListener('change', filterBills);
+    document.getElementById('dateFilter').addEventListener('change', filterBills);
+
+    function filterBills() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const dateFilter = document.getElementById('dateFilter').value;
+      const filtered = bills.filter(bill =>
+        bill.user.toLowerCase().includes(searchTerm) &&
+        (statusFilter === '' || bill.status === statusFilter) &&
+        (dateFilter === '' || bill.date === dateFilter)
+      );
+      renderTable(filtered);
+    }
+
+    // Modal controls
+    const modal = document.getElementById('billModal');
+    const closeModal = document.getElementById('closeModal');
+    const billForm = document.getElementById('billForm');
+
+    document.getElementById('addBillBtn').addEventListener('click', () => {
+      editingBillId = null;
+      document.getElementById('modalTitle').textContent = 'Add Bill';
+      billForm.reset();
+      modal.style.display = 'block';
+      modal.setAttribute('aria-hidden', 'false');
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    // Form submission
+    billForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = document.getElementById('billUser').value;
+      const amount = parseFloat(document.getElementById('billAmount').value);
+      const date = document.getElementById('billDate').value;
+      const status = document.getElementById('billStatus').value;
+
+      if (!userId) {
+        alert('Please select a student');
+        return;
+      }
+
+      // Note: Bills are automatically created from subscriptions
+      // This form is for manual bill creation (if needed in future)
+      alert('Note: Bills are automatically generated from student subscriptions. To create a bill, please create a subscription for the student through the Subscriptions page.');
+      
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+      billForm.reset();
+    });
+
+    // Edit, Delete, and Mark Paid actions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('edit-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        const bill = bills.find(b => b.id === id);
+        editingBillId = id;
+        document.getElementById('modalTitle').textContent = 'Edit Bill';
+        document.getElementById('billUser').value = bill.user;
+        document.getElementById('billAmount').value = bill.amount;
+        document.getElementById('billDate').value = bill.date;
+        document.getElementById('billStatus').value = bill.status;
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+      } else if (e.target.classList.contains('delete-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        if (confirm('Are you sure you want to delete this bill?')) {
+          bills = bills.filter(b => b.id !== id);
+          renderTable();
+        }
+      } else if (e.target.classList.contains('mark-paid-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        const bill = bills.find(b => b.id === id);
+        if (confirm(`Mark bill #${id} as paid?`)) {
+          // Note: In a real app, this would update the subscription status via API
+          bill.status = 'Paid';
+          renderTable();
+          alert('Bill marked as paid. Note: This is a frontend-only change. Backend integration needed for persistence.');
+        }
+      }
+    });
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadStudents();
+      await loadBills();
+    });
+  </script>
+</body>
+</html>

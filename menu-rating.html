@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Menu & Rating for Smart Mess - View menu items and rate them." />
+  <title>Menu & Rating - Smart Mess</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar - Matching Dashboard */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #11131a 0%, #0a0e1a 100%);
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 122, 26, 0.1);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding: 0 20px;
+    }
+
+    .nav-links {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 15px;
+    }
+
+    .nav-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(255, 122, 26, 0.1);
+      color: #ff7a1a;
+      transform: translateX(5px);
+    }
+
+    .nav-links a i {
+      width: 20px;
+      font-size: 1.1rem;
+    }
+
+    .logout-link {
+      padding: 20px 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+    }
+
+    .logout-link a {
+      color: #ff6b6b;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .logout-link a:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 30px 40px;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 122, 26, 0.2);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .user-info strong {
+      color: #ff7a1a;
+    }
+
+    /* Section */
+    .section {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section h2 i {
+      color: #ff7a1a;
+    }
+
+    /* Menu Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .menu-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+      transition: all 0.3s;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 122, 26, 0.3);
+      box-shadow: 0 8px 25px rgba(255, 122, 26, 0.2);
+    }
+
+    .menu-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+    }
+
+    .menu-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      padding: 20px 20px 10px;
+      margin: 0;
+    }
+
+    .menu-card p {
+      color: #94a3b8;
+      padding: 0 20px 15px;
+      line-height: 1.6;
+    }
+
+    .menu-card p strong {
+      color: #ff7a1a;
+    }
+
+    /* Rating */
+    .rating {
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .rating span {
+      display: block;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .stars {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stars .fa-star {
+      color: #4a5568;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .stars .fa-star:hover {
+      color: #ff7a1a;
+      transform: scale(1.1);
+    }
+
+    .stars .fa-star.active {
+      color: #ff7a1a;
+    }
+
+    .rating-value {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    /* Feedback Form */
+    .feedback-section {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .form-group textarea {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 122, 26, 0.2);
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+      transition: all 0.3s;
+    }
+
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #ff7a1a;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 122, 26, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar - Matching Dashboard -->
+    <aside class="sidebar">
+      <div class="logo">🍽️ Smart Mess</div>
+      <nav class="nav-links">
+        <a href="student-dashboard.html">
+          <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="menu-rating.html" class="active">
+          <i class="fas fa-utensils"></i> Menu & Rating
+        </a>
+        <a href="meal-packages.html">
+          <i class="fas fa-box"></i> Mess Packages
+        </a>
+        <a href="billing-payment.html">
+          <i class="fas fa-receipt"></i> Billing & Payments
+        </a>
+        <a href="profile.html">
+          <i class="fas fa-user-circle"></i> Profile
+        </a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h1>Menu & Rating</h1>
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, <strong id="user-name">Student</strong></span>
+        </div>
+      </header>
+
+      <!-- Menu Items Grid -->
+      <section class="section">
+        <h2><i class="fas fa-utensils"></i> Today's Menu</h2>
+        <div class="menu-grid" id="menuGrid">
+          <div style="text-align: center; padding: 40px; color: #94a3b8;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 15px;"></i>
+            <p>Loading menu...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feedback Form -->
+      <section class="feedback-section">
+        <h2><i class="fas fa-comment-alt"></i> Submit Feedback</h2>
+        <form id="feedbackForm">
+          <div class="form-group">
+            <label for="feedbackText">Your Feedback:</label>
+            <textarea id="feedbackText" rows="4" placeholder="Share your thoughts on the menu..." required></textarea>
+          </div>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-paper-plane"></i> Submit Feedback
+          </button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+
+    // Redirect if not logged in
+    if (!userId || userRole !== 'student') {
+      alert('Please login as a student to access this page.');
+      window.location.href = 'login1.html';
+    }
+
+    // Load student name
+    async function loadStudentName() {
+      try {
+        const profile = await student.getProfile(userId);
+        if (profile && !profile.error) {
+          document.getElementById('user-name').textContent = profile.name || 'Student';
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    // Function to get appropriate image based on menu item name
+    function getMenuImage(itemName, imagePath) {
+      // If image_path exists and is valid, use it
+      if (imagePath && imagePath.trim() !== '') {
+        return imagePath;
+      }
+      
+      // Map menu item names to images based on keywords
+      const name = itemName.toLowerCase();
+      
+      // Chicken dishes
+      if (name.includes('chicken') || name.includes('chiken')) {
+        return 'image/chiken cury.jpg';
+      }
+      
+      // Biryani dishes
+      if (name.includes('biryani')) {
+        return 'image/vegetable biryani.jpg';
+      }
+      
+      // Paneer dishes
+      if (name.includes('paneer') || name.includes('tikka')) {
+        return 'image/paneer tikka.jpg';
+      }
+      
+      // Rice dishes
+      if (name.includes('rice') || name.includes('pulao')) {
+        return 'image/vegetable biryani.jpg';
+      }
+      
+      // Dal/Lentil dishes
+      if (name.includes('dal') || name.includes('lentil')) {
+        return 'image/dal fry.jpg';
+      }
+      
+      // Roti/Bread
+      if (name.includes('roti') || name.includes('naan') || name.includes('bread')) {
+        return 'image/roti.jpg';
+      }
+      
+      // Beverages
+      if (name.includes('tea') || name.includes('coffee') || name.includes('drink')) {
+        return 'image/tea.jpg';
+      }
+      
+      // Curry dishes
+      if (name.includes('curry') || name.includes('masala')) {
+        return 'image/chiken cury.jpg';
+      }
+      
+      // Vegetable dishes
+      if (name.includes('vegetable') || name.includes('veg') || name.includes('sabzi')) {
+        return 'image/vegetable biryani.jpg';
+      }
+      
+      // Default fallback
+      return 'image/chiken cury.jpg';
+    }
+
+    // Load menu from backend
+    let menuItems = [];
+    async function loadMenu() {
+      try {
+        const result = await menu.getTodayMenu();
+        if (result && !result.error && result.length > 0) {
+          menuItems = result.map(item => ({ 
+            ...item, 
+            rating: 0, 
+            image: getMenuImage(item.name, item.image_path)
+          }));
+          renderMenu();
+        } else {
+          // Fallback to default menu
+          menuItems = [
+            { id: 1, name: 'Chicken Curry', description: 'Spicy chicken curry with rice.', price: 150, category: 'Main Course', rating: 0, image: 'image/chiken cury.jpg' },
+            { id: 2, name: 'Vegetable Biryani', description: 'Fragrant rice with mixed vegetables.', price: 120, category: 'Main Course', rating: 0, image: 'image/vegetable biryani.jpg' },
+            { id: 3, name: 'Tea', description: 'Hot tea with lemon.', price: 20, category: 'Beverage', rating: 0, image: 'image/tea.jpg' },
+          ];
+          renderMenu();
+        }
+      } catch (error) {
+        console.error('Error loading menu:', error);
+        document.getElementById('menuGrid').innerHTML = '<div style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-exclamation-circle"></i><p>Error loading menu. Please try again later.</p></div>';
+      }
+    }
+
+    // Render menu grid
+    function renderMenu() {
+      const grid = document.getElementById("menuGrid");
+      if (menuItems.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #94a3b8;"><i class="fas fa-utensils"></i><p>No menu available for today</p></div>';
+        return;
+      }
+
+      grid.innerHTML = menuItems.map((item) => {
+        // Create a fallback image URL with the item name
+        const fallbackImage = `https://via.placeholder.com/300x180/1a1f2e/ff7a1a?text=${encodeURIComponent(item.name)}`;
+        
+        return `
+        <div class="menu-card">
+          <img src="${item.image}" alt="${item.name}" class="menu-image" 
+               onerror="this.onerror=null; this.src='${fallbackImage}';">
+          <h3>${item.name}</h3>
+          <p>${item.description || 'Delicious meal'}</p>
+          <p><strong>Price:</strong> ₹${item.price || 0}</p>
+          <p><strong>Category:</strong> ${item.category || 'Main Course'}</p>
+          <div class="rating" data-id="${item.id}">
+            <span>Rate this item:</span>
+            <div class="stars">
+              ${[1, 2, 3, 4, 5].map((star) => `<i class="fas fa-star" data-star="${star}"></i>`).join("")}
+            </div>
+            <span class="rating-value">Not rated</span>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    // Handle star rating clicks
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("fa-star")) {
+        const ratingEl = e.target.closest(".rating");
+        if (!ratingEl) return;
+        
+        const itemId = parseInt(ratingEl.dataset.id);
+        const starValue = parseInt(e.target.dataset.star);
+        const item = menuItems.find((i) => i.id === itemId);
+        
+        if (item) {
+          item.rating = starValue;
+
+          const stars = ratingEl.querySelectorAll(".fa-star");
+          stars.forEach((star, index) => {
+            star.classList.toggle("active", index < starValue);
+          });
+
+          ratingEl.querySelector(".rating-value").textContent = `${starValue} star${starValue > 1 ? "s" : ""}`;
+        }
+      }
+    });
+
+    // Feedback form submission
+    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const feedback = document.getElementById("feedbackText").value.trim();
+      
+      if (!feedback) {
+        alert('Please enter your feedback');
+        return;
+      }
+      
+      if (!userId) { 
+        alert('Please login first'); 
+        return; 
+      }
+      
+      try {
+        const result = await student.submitFeedback(userId, feedback);
+        if (result && result.success) {
+          alert('✅ Feedback submitted successfully!');
+          document.getElementById("feedbackForm").reset();
+        } else {
+          alert('❌ Error: ' + (result.error || 'Failed to submit feedback'));
+        }
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+        alert('❌ Connection error. Please check if the server is running.');
+      }
+    });
+
+    // Initialize
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadStudentName();
+      await loadMenu();
+    });
+  </script>
+</body>
+</html>

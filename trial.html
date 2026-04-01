@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Smart Mess Services — 3-Day Free Trial</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0;
+  background:#0b0f14;
+  color:#fff;
+  font-family:Inter,system-ui;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+.card {
+  width:100%;
+  max-width:640px;
+  background:linear-gradient(180deg,#0f1720,#0c1115);
+  padding:28px;
+  border-radius:12px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.6);
+}
+h1 {margin:0 0 8px;color:#ff7a1a;}
+p {color:#a9b5c1;}
+label {
+  display:block;
+  margin-top:12px;
+  color:#cbd5e1;
+  font-weight:600;
+}
+input {
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  background:#071018;
+  color:#fff;
+  margin-top:6px;
+}
+.row {display:flex;gap:12px;}
+
+/* 🔥 Changed Button Style (Same as Explore Trial Button) */
+.btn {
+  margin-top:16px;
+  padding:12px;
+  border-radius:25px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn.primary {
+  background:#ff8a1a;
+  color:#111;
+}
+
+.btn.primary:hover {
+  background:#ff6a00;
+  transform:scale(1.05);
+}
+
+.btn.cancel {
+  background:#1a1f25;
+  color:#fff;
+}
+
+.btn.cancel:hover {
+  background:#2a2f35;
+  transform:scale(1.05);
+}
+
+.muted {
+  font-size:13px;
+  color:#93a1b3;
+  margin-top:10px;
+}
+@media (max-width:640px) {
+  .row {flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Start your 3-Day Free Trial</h1>
+<p>Get full access to Smart Mess Services for 3 days. No credit card required (frontend demo).</p>
+
+<form id="trialForm">
+<label>Name</label>
+<input id="name" required placeholder="Full name">
+
+<label>Email</label>
+<input id="email" type="email" required placeholder="you@domain.com">
+
+<label>Phone (optional)</label>
+<input id="phone" placeholder="+91 98765 43210">
+
+<div class="row">
+<button class="btn primary" type="submit">Activate 3-Day Trial</button>
+<button class="btn cancel" type="button" onclick="location.href='index.html'">Cancel</button>
+</div>
+
+<div class="muted">By clicking Activate you agree to demo terms. This is a front-end demo only.</div>
+</form>
+</div>
+
+<script>
+document.getElementById('trialForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('name').value || 'User';
+  alert(`🎉 ${name}, your 3-Day Free Trial is activated!\nYou will be redirected to the dashboard (demo).`);
+  location.href = 'index.html';
+});
+</script>
+</body>
+</html>
+
+

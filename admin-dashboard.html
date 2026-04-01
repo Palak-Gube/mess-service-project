@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Dashboard for Smart Mess - Manage users, menus, inventory, and more with analytics.">
+  <title>Admin Dashboard - Smart Mess</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://via.placeholder.com/32x32/243b7b/ffffff?text=SM" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #11131a 0%, #0a0e1a 100%);
+      padding: 30px 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 122, 26, 0.1);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 15px;
+    }
+
+    .nav-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(255, 122, 26, 0.1);
+      color: #ff7a1a;
+      transform: translateX(5px);
+    }
+
+    .nav-links a i {
+      width: 20px;
+      font-size: 1.1rem;
+    }
+
+    .logout-link {
+      padding: 20px 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: auto;
+    }
+
+    .logout-link a {
+      color: #ff6b6b;
+      text-decoration: none;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .logout-link a:hover {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff5252;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 30px 40px;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 122, 26, 0.2);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #ff9a4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .user-info strong { color: #ff7a1a; }
+
+    /* Sections */
+    .section {
+      background: linear-gradient(135deg, #1a1f2e, #11131a);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 122, 26, 0.1);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title i { color: #ff7a1a; }
+
+    /* Filter */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .filter-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 122, 26, 0.12);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .filter-card label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .filter-card small {
+      color: #94a3b8;
+      display: block;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      background: rgba(15, 20, 25, 0.6);
+      color: #fff;
+      border: 1px solid rgba(255, 122, 26, 0.25);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+    }
+
+    select:focus { border-color: rgba(255, 122, 26, 0.6); }
+
+    .btn {
+      border: none;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff7a1a, #ff9a4d);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 122, 26, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(148, 163, 184, 0.18);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    .selected-info {
+      margin-top: 15px;
+      padding: 12px 14px;
+      background: rgba(255, 122, 26, 0.08);
+      border: 1px solid rgba(255, 122, 26, 0.2);
+      border-radius: 10px;
+      display: none;
+      color: #cbd5e1;
+    }
+
+    /* Dashboard cards */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid rgba(255, 122, 26, 0.12);
+      transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .card.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 122, 26, 0.25);
+      box-shadow: 0 8px 25px rgba(255, 122, 26, 0.14);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 122, 26, 0.2);
+      color: #ff7a1a;
+      font-size: 1.3rem;
+      flex: 0 0 auto;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    /* Quick actions */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      min-width: 700px;
+      background: rgba(15, 20, 25, 0.25);
+      border: 1px solid rgba(255, 122, 26, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    thead tr {
+      background: rgba(255, 122, 26, 0.14);
+    }
+
+    th, td {
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      vertical-align: top;
+    }
+
+    th {
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tbody tr:hover { background: rgba(255, 122, 26, 0.06); }
+
+    .muted { color: #94a3b8; }
+    .status-pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .status-pill.active { color: #4caf50; background: rgba(76, 175, 80, 0.12); border-color: rgba(76, 175, 80, 0.18); }
+    .status-pill.inactive { color: #ff9800; background: rgba(255, 152, 0, 0.12); border-color: rgba(255, 152, 0, 0.18); }
+
+    /* Graphs */
+    .graphs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .graph-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 122, 26, 0.12);
+    }
+
+    .graph-card h3 {
+      color: #fff;
+      margin-bottom: 15px;
+      font-size: 1.05rem;
+    }
+
+    /* Weekly stats */
+    .weekly-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .weekly-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 122, 26, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .weekly-item h4 { color: #94a3b8; font-weight: 700; margin-bottom: 6px; }
+    .weekly-item p { color: #ff7a1a; font-size: 1.6rem; font-weight: 900; margin: 0; }
+
+    /* Notifications */
+    .notifications-list { list-style: none; }
+    .notifications-list li {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+    }
+    .notifications-list li i { color: #ff7a1a; margin-top: 2px; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 20px; }
+      .filter-grid { grid-template-columns: 1fr; }
+      table { min-width: 600px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" role="navigation" aria-label="Admin Navigation">
+      <div class="logo"><i class="fas fa-utensils"></i> Smart Mess Admin</div>
+      <nav class="nav-links">
+        <a href="admin-dashboard.html" class="active" aria-current="page"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="user-management.html"><i class="fas fa-users"></i> User Management</a>
+        <a href="menu-management.html"><i class="fas fa-utensils"></i> Menu Management</a>
+        <a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a>
+        <a href="billing-finance.html"><i class="fas fa-file-invoice-dollar"></i> Billing & Finance</a>
+        <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+        <a href="admin-feedbacks.html"><i class="fas fa-comments"></i> View Feedbacks</a>
+        <a href="admin-subscriptions.html"><i class="fas fa-list"></i> View Subscriptions</a>
+        <a href="admin-attendance.html"><i class="fas fa-check-circle"></i> Mark Attendance</a>
+      </nav>
+      <div class="logout-link">
+        <a href="login1.html" aria-label="Logout" onclick="localStorage.clear();">
+          <i class="fas fa-power-off"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-content" role="main">
+      <header class="header">
+        <h1>Admin Dashboard</h1>
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Welcome, <strong id="admin-name">Admin</strong></span>
+        </div>
+      </header>
+
+      <!-- Filter -->
+      <section class="section" aria-label="Student Filter">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-filter"></i> Filter by Students</div>
+          <div class="muted">Leave empty to show all</div>
+        </div>
+        <div class="filter-grid">
+          <div class="filter-card">
+            <label for="studentFilter">Select Students (Ctrl/Cmd for multi-select)</label>
+            <select id="studentFilter" multiple style="min-height: 120px;">
+              <option value="">Loading students...</option>
+            </select>
+            <small>This only filters dashboard lists/charts—no data is deleted.</small>
+            <div id="selectedStudentsInfo" class="selected-info">
+              <strong>Selected Students:</strong> <span id="selectedCount">0</span>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap: 12px;">
+            <button id="applyFilter" class="btn btn-primary"><i class="fas fa-check"></i> Apply Filter</button>
+            <button id="clearFilter" class="btn btn-secondary"><i class="fas fa-times"></i> Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Overview Cards -->
+      <section class="section" aria-label="Overview">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-layer-group"></i> Overview</div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card" data-tooltip="Total registered students/users in the system">
+            <div class="card-top">
+              <div>
+                <h3>Total Students</h3>
+                <div class="card-value" id="totalStudentsCard">0</div>
+              </div>
+              <div class="card-icon"><i class="fas fa-users"></i></div>
+            </div>
+          </div>
+
+          <div class="card" data-tooltip="Currently active subscriptions">
+            <div class="card-top">
+              <div>
+                <h3>Active Subscriptions</h3>
+                <div class="card-value" id="activeSubscriptionsCard">0</div>
+              </div>
+              <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+            </div>
+          </div>
+
+          <div class="card" data-tooltip="Pending dues from bills/subscriptions">
+            <div class="card-top">
+              <div>
+                <h3>Pending Payments</h3>
+                <div class="card-value" id="pendingPaymentsCard">₹0</div>
+              </div>
+              <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+          </div>
+
+          <div class="card" data-tooltip="Number of attendance entries today">
+            <div class="card-top">
+              <div>
+                <h3>Today's Attendance</h3>
+                <div class="card-value" id="todayAttendanceCard">0</div>
+              </div>
+              <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions -->
+      <section class="section" aria-label="Quick Actions">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+        </div>
+        <div class="actions-grid">
+          <button class="btn btn-primary" onclick="window.location.href='user-management.html'"><i class="fas fa-user-plus"></i> Manage Users</button>
+          <button class="btn btn-primary" onclick="window.location.href='menu-management.html'"><i class="fas fa-utensils"></i> Manage Menu</button>
+          <button class="btn btn-primary" onclick="window.location.href='inventory.html'"><i class="fas fa-boxes"></i> Update Inventory</button>
+          <button class="btn btn-primary" onclick="window.location.href='admin-attendance.html'"><i class="fas fa-check-circle"></i> Mark Attendance</button>
+        </div>
+      </section>
+
+      <!-- Analytics -->
+      <section class="section" aria-labelledby="analytics-section">
+        <div class="section-header">
+          <div class="section-title" id="analytics-section"><i class="fas fa-chart-pie"></i> Analytics Overview</div>
+          <div class="muted">Charts are for quick visual insights</div>
+        </div>
+        <div class="graphs-grid">
+          <div class="graph-card">
+            <h3>User Growth (Sample)</h3>
+            <canvas id="userGrowthChart"></canvas>
+          </div>
+          <div class="graph-card">
+            <h3>Subscription Breakdown (Sample)</h3>
+            <canvas id="subscriptionChart"></canvas>
+          </div>
+          <div class="graph-card">
+            <h3>Daily Attendance (Last 7 Days)</h3>
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Feedbacks -->
+      <section class="section" aria-label="Recent Feedbacks">
+        <div class="section-header">
+          <div class="section-title" id="feedbacksHeader"><i class="fas fa-comments"></i> Recent Feedbacks</div>
+        </div>
+        <div id="recentFeedbacks" class="muted">Loading feedbacks...</div>
+      </section>
+
+      <!-- Recent Subscriptions -->
+      <section class="section" aria-label="Recent Subscriptions">
+        <div class="section-header">
+          <div class="section-title" id="subscriptionsHeader"><i class="fas fa-list"></i> Recent Subscriptions</div>
+        </div>
+        <div id="recentSubscriptions" class="muted">Loading subscriptions...</div>
+      </section>
+
+      <!-- Today's Attendance List -->
+      <section class="section" aria-label="Today's Attendance">
+        <div class="section-header">
+          <div class="section-title" id="attendanceHeader"><i class="fas fa-check-circle"></i> Today's Attendance</div>
+        </div>
+        <div id="todayAttendance" class="muted">Loading attendance...</div>
+      </section>
+
+      <!-- Weekly Stats -->
+      <section class="section" aria-label="Weekly Statistics">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-chart-line"></i> Weekly Statistics (Last 7 Days)</div>
+        </div>
+        <div class="weekly-grid">
+          <div class="weekly-item">
+            <h4>Feedbacks</h4>
+            <p id="weeklyFeedbacks">0</p>
+          </div>
+          <div class="weekly-item">
+            <h4>Subscriptions</h4>
+            <p id="weeklySubscriptions">0</p>
+          </div>
+          <div class="weekly-item">
+            <h4>Attendance</h4>
+            <p id="weeklyAttendance">0</p>
+          </div>
+          <div class="weekly-item">
+            <h4>Revenue</h4>
+            <p id="weeklyRevenue">₹0</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="section" aria-label="Recent Notifications">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-bell"></i> Recent Notifications</div>
+        </div>
+        <ul id="notificationsList" class="notifications-list">
+          <li><i class="fas fa-info-circle"></i> Loading notifications...</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    // Check if admin is logged in
+    const userId = localStorage.getItem('userId');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userId || userRole !== 'admin') {
+      alert('Please login as admin to access this page.');
+      window.location.href = 'login1.html';
+    }
+
+    // Load all students for filter dropdown
+    async function loadStudentsForFilter() {
+      try {
+        const students = await admin.getAllStudents();
+        const select = document.getElementById('studentFilter');
+        if (students && !students.error && students.length > 0) {
+          select.innerHTML = students.map(s =>
+            `<option value="${s.id}">${s.name} (${s.student_id})</option>`
+          ).join('');
+        } else {
+          select.innerHTML = '<option value="">No students found</option>';
+        }
+      } catch (error) {
+        console.error('Error loading students:', error);
+        document.getElementById('studentFilter').innerHTML = '<option value="">Error loading students</option>';
+      }
+    }
+
+    function getSelectedStudentIds() {
+      const select = document.getElementById('studentFilter');
+      return Array.from(select.selectedOptions).map(opt => opt.value).filter(Boolean);
+    }
+
+    function updateSelectedInfo() {
+      const selected = getSelectedStudentIds();
+      const infoDiv = document.getElementById('selectedStudentsInfo');
+      const countSpan = document.getElementById('selectedCount');
+      if (selected.length > 0) {
+        infoDiv.style.display = 'block';
+        countSpan.textContent = selected.length;
+      } else {
+        infoDiv.style.display = 'none';
+      }
+    }
+
+    let currentFilter = [];
+
+    async function loadDashboard(studentIds = []) {
+      try {
+        currentFilter = studentIds;
+        const stats = await admin.getDashboard(studentIds);
+        window.dashboardData = stats;
+
+        if (!stats || stats.error) {
+          console.error('Error loading dashboard:', stats?.error);
+          alert('Error loading dashboard data. Please check if the server is running.');
+          return;
+        }
+
+        document.getElementById('totalStudentsCard').textContent = stats.total_students || 0;
+        document.getElementById('activeSubscriptionsCard').textContent = stats.active_subscriptions || 0;
+        document.getElementById('pendingPaymentsCard').textContent = `₹${(stats.pending_payments || 0).toLocaleString()}`;
+        document.getElementById('todayAttendanceCard').textContent = stats.today_attendance || 0;
+
+        // Headers update (filtered/unfiltered)
+        document.getElementById('feedbacksHeader').innerHTML =
+          `<i class="fas fa-comments"></i> ${currentFilter.length ? `Feedbacks (Filtered: ${currentFilter.length})` : 'Recent Feedbacks'}`;
+        document.getElementById('subscriptionsHeader').innerHTML =
+          `<i class="fas fa-list"></i> ${currentFilter.length ? `Subscriptions (Filtered: ${currentFilter.length})` : 'Recent Subscriptions'}`;
+        document.getElementById('attendanceHeader').innerHTML =
+          `<i class="fas fa-check-circle"></i> ${currentFilter.length ? `Today's Attendance (Filtered: ${currentFilter.length})` : \"Today's Attendance\"}`;
+
+        // Feedback table
+        const feedbacksDiv = document.getElementById('recentFeedbacks');
+        if (stats.recent_feedbacks && stats.recent_feedbacks.length > 0) {
+          feedbacksDiv.innerHTML = `
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Feedback</th>
+                    <th>Rating</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${stats.recent_feedbacks.map(f => `
+                    <tr>
+                      <td>${f.student_name} (${f.student_id})</td>
+                      <td>${f.feedback_text}</td>
+                      <td>${'★'.repeat(f.rating || 0)}</td>
+                      <td>${new Date(f.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        } else {
+          feedbacksDiv.innerHTML = '<div class="muted">No feedbacks found for selected students.</div>';
+        }
+
+        // Subscriptions table
+        const subscriptionsDiv = document.getElementById('recentSubscriptions');
+        if (stats.recent_subscriptions && stats.recent_subscriptions.length > 0) {
+          subscriptionsDiv.innerHTML = `
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Package</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${stats.recent_subscriptions.map(s => `
+                    <tr>
+                      <td>${s.student_name} (${s.student_id})</td>
+                      <td>${s.package_name}</td>
+                      <td>₹${(s.amount_paid || 0).toLocaleString()}</td>
+                      <td><span class="status-pill ${s.status === 'active' ? 'active' : 'inactive'}">${s.status}</span></td>
+                      <td>${new Date(s.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        } else {
+          subscriptionsDiv.innerHTML = '<div class="muted">No subscriptions found for selected students.</div>';
+        }
+
+        // Attendance table
+        const attendanceDiv = document.getElementById('todayAttendance');
+        if (stats.today_attendance_list && stats.today_attendance_list.length > 0) {
+          attendanceDiv.innerHTML = `
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Meal Type</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${stats.today_attendance_list.map(a => `
+                    <tr>
+                      <td>${a.student_name} (${a.student_id})</td>
+                      <td>${a.meal_type.charAt(0).toUpperCase() + a.meal_type.slice(1)}</td>
+                      <td><span class="status-pill active">${a.status}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        } else {
+          attendanceDiv.innerHTML = '<div class="muted">No attendance found for selected students today.</div>';
+        }
+
+        // Weekly stats
+        if (stats.weekly_stats) {
+          document.getElementById('weeklyFeedbacks').textContent = stats.weekly_stats.feedbacks || 0;
+          document.getElementById('weeklySubscriptions').textContent = stats.weekly_stats.subscriptions || 0;
+          document.getElementById('weeklyAttendance').textContent = stats.weekly_stats.attendance || 0;
+          document.getElementById('weeklyRevenue').textContent = `₹${(stats.weekly_stats.revenue || 0).toLocaleString()}`;
+        }
+
+        // Notifications
+        const notificationsList = document.getElementById('notificationsList');
+        notificationsList.innerHTML = '';
+        if (stats.recent_feedbacks && stats.recent_feedbacks.length > 0) {
+          notificationsList.innerHTML += `<li><i class="fas fa-comments"></i> ${stats.recent_feedbacks.length} new feedback(s) received.</li>`;
+        }
+        if (stats.recent_subscriptions && stats.recent_subscriptions.length > 0) {
+          notificationsList.innerHTML += `<li><i class="fas fa-check-circle"></i> ${stats.recent_subscriptions.length} new subscription(s) created.</li>`;
+        }
+        if ((stats.today_attendance || 0) > 0) {
+          notificationsList.innerHTML += `<li><i class="fas fa-info-circle"></i> ${stats.today_attendance} attendance marked today.</li>`;
+        }
+        if (notificationsList.innerHTML === '') {
+          notificationsList.innerHTML = '<li><i class="fas fa-info-circle"></i> No new notifications.</li>';
+        }
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        alert('Connection error. Please check if the server is running on http://localhost:5000');
+      }
+    }
+
+    document.getElementById('applyFilter').addEventListener('click', async () => {
+      const selectedIds = getSelectedStudentIds();
+      updateSelectedInfo();
+      await loadDashboard(selectedIds);
+    });
+
+    document.getElementById('clearFilter').addEventListener('click', async () => {
+      const select = document.getElementById('studentFilter');
+      select.selectedIndex = -1;
+      updateSelectedInfo();
+      await loadDashboard([]);
+    });
+
+    document.getElementById('studentFilter').addEventListener('change', updateSelectedInfo);
+
+    function initCharts() {
+      // Sample charts (kept simple; attendance chart uses real data if present)
+      const ctx1 = document.getElementById('userGrowthChart').getContext('2d');
+      new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'New Users',
+            data: [20, 35, 45, 50, 60, 70],
+            backgroundColor: 'rgba(255, 122, 26, 0.35)',
+            borderColor: '#ff7a1a',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { beginAtZero: true, ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('subscriptionChart').getContext('2d');
+      new Chart(ctx2, {
+        type: 'pie',
+        data: {
+          labels: ['Basic', 'Premium', 'VIP'],
+          datasets: [{
+            data: [50, 30, 16],
+            backgroundColor: ['rgba(76, 175, 80, 0.85)', 'rgba(255, 152, 0, 0.85)', 'rgba(244, 67, 54, 0.85)']
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#cbd5e1' } } } }
+      });
+
+      const ctx3 = document.getElementById('revenueChart').getContext('2d');
+      const dashboardData = window.dashboardData;
+      if (dashboardData && dashboardData.daily_attendance_chart) {
+        const attendanceData = dashboardData.daily_attendance_chart;
+        new Chart(ctx3, {
+          type: 'line',
+          data: {
+            labels: attendanceData.map(d => new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' })),
+            datasets: [{
+              label: 'Daily Attendance',
+              data: attendanceData.map(d => d.count),
+              borderColor: '#ff7a1a',
+              backgroundColor: 'rgba(255, 122, 26, 0.12)',
+              fill: true,
+              tension: 0.35
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+              y: { beginAtZero: true, ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+            }
+          }
+        });
+      } else {
+        new Chart(ctx3, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Attendance',
+              data: [12, 18, 22, 16, 20, 24, 19],
+              borderColor: '#ff7a1a',
+              backgroundColor: 'rgba(255, 122, 26, 0.12)',
+              fill: true,
+              tension: 0.35
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+              y: { beginAtZero: true, ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+            }
+          }
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await loadStudentsForFilter();
+
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+          setTimeout(() => card.classList.add('fade-in'), index * 80);
+        });
+
+        await loadDashboard();
+        initCharts();
+      } catch (error) {
+        console.error('Error initializing dashboard:', error);
+        alert('Error initializing dashboard. Please refresh the page.');
+      }
+    });
+  </script>
+</body>
+</html>
+

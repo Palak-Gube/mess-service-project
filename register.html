@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Mess - Registration</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #243b7b 0%, #1a2c61 100%);
+      color: #333;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+     
+    .app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw; /* Use full screen width */
+}
+.main-content {
+  flex-grow: 1;
+  padding: 40px 50px;
+  overflow-y: auto;
+  background: var(--white);
+  border-radius: var(--border-radius) 0 0 0;
+  width: calc(100vw - 260px); /* Full viewport width minus sidebar */
+}
+    .register-container {
+      background: white;
+      padding: 40px 50px;
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      max-width: 450px;
+      width: 100%;
+      color: #243b7b;
+    }
+
+    .register-container h1 {
+      margin-bottom: 30px;
+      font-weight: 700;
+      font-size: 2rem;
+      text-align: center;
+      color: var(--primary-color, #243b7b);
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--primary-color, #243b7b);
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 12px 15px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #ff5722;
+      box-shadow: 0 0 6px #ff5722aa;
+    }
+
+    .btn-register {
+      width: 100%;
+      padding: 15px 0;
+      background: #ff5722;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-register:hover {
+      background-color: #e64a19;
+      transform: scale(1.05);
+    }
+
+    .info-text {
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 15px;
+      color: #666;
+    }
+    .info-text a {
+      color: #ff5722;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .info-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container" role="main" aria-labelledby="regTitle">
+    <h1 id="regTitle">Create Your Account</h1>
+
+    <form id="registrationForm" novalidate>
+      <div class="form-group">
+        <label for="fullName">Full Name *</label>
+        <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name" aria-required="true" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" required placeholder="Enter your email" aria-required="true" />
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username *</label>
+        <input type="text" id="username" name="username" required placeholder="Choose a username" aria-required="true" />
+      </div>
+
+      <div class="form-group">
+        <label for="role">I am a... *</label>
+        <select id="role" name="role" required aria-required="true">
+          <option value="" disabled selected>Select your role</option>
+          <option value="student">Student/Resident</option>
+          <option value="admin">Mess Admin/Staff</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <input type="password" id="password" name="password" required placeholder="Enter a password" aria-required="true" />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password *</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password" aria-required="true" />
+      </div>
+
+      <button type="submit" class="btn-register" aria-label="Register account">
+        <i class="fas fa-user-plus"></i> Register
+      </button>
+    </form>
+
+    <p class="info-text">
+      Already have an account?
+      <a href="login.html" aria-label="Login here">Login here</a>
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById('registrationForm');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const fullName = form.fullName.value.trim();
+      const email = form.email.value.trim();
+      const username = form.username.value.trim();
+      const role = form.role.value;
+      const password = form.password.value;
+      const confirmPassword = form.confirmPassword.value;
+
+      if (!fullName || !email || !username || !role || !password || !confirmPassword) {
+        alert('Please fill all required fields.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+
+      // Basic email format check
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      // TODO: Send data to server or perform further logic here
+
+      alert(`Registration successful for ${fullName} as ${role}! (Demo)`);
+      form.reset();
+    });
+  </script>
+</body>
+</html>
